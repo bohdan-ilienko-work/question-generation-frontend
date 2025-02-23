@@ -1,23 +1,19 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { initializeAuth } from "./initializeAuth";
+import { AppRouter } from "./AppRouter";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    async function init() {
+      await initializeAuth()(dispatch);
+    }
 
-  return (
-    <>
-      <h1>
-        <img alt="React Logo" className="text-4xl" src={reactLogo} />
-        <img alt="Vite Logo" className="text-4xl" src={viteLogo} />
+    init();
+  }, [dispatch]);
 
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is: {count}
-        </button>
-      </h1>
-    </>
-  );
+  return <AppRouter />;
 }
 
 export default App;
