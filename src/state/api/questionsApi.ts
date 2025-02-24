@@ -5,6 +5,7 @@ import { baseQueryWithReauth } from "./authApi";
 import { QuestionType } from "../../types/QuestionType.enum";
 import { GptModel } from "../../types/GptModel.type";
 import { Question } from "../../types/Question.interface";
+import { setTotalPages } from "../questionsSlice";
 
 export interface QuestionGenerate {
   prompt: string;
@@ -23,19 +24,64 @@ export const questionsApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Questions", "GeneratedQuestions"],
   endpoints: (builder) => ({
-    getQuestions: builder.query<Question[], void>({
-      query: () => "/questions",
+    getQuestions: builder.query<
+      {
+        message: string;
+        responseObject: {
+          questions: Question[];
+          totalPages: number;
+        };
+      },
+      {
+        limit: number;
+        page: number;
+      }
+    >({
+      query: ({ limit, page }) => ({
+        url: "/questions",
+        params: { limit, page },
+      }),
       providesTags: ["Questions"],
     }),
+    confirmQuestion: builder.mutation<Question, string>({
+      query: (id) => ({
+        url: `/questions/${id}/confirm`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Questions", "GeneratedQuestions"],
+    }),
+    rejectQuestion: builder.mutation<Question, string>({
+      query: (id) => ({
+        url: `/questions/${id}/reject`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["GeneratedQuestions"],
+    }),
     getGeneratedQuestions: builder.query<
-      Question[],
+      {
+        message: string;
+        responseObject: {
+          questions: Question[];
+          totalPages: number;
+        };
+      },
       { limit: number; page?: number }
     >({
-      query: (limit, page = 1) => ({
-        url: "/questions/generate",
+      query: ({ limit, page = 1 }) => ({
+        url: "/questions/generated",
         params: { limit, page },
       }),
       providesTags: ["GeneratedQuestions"],
+
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          dispatch(setTotalPages(data.responseObject.totalPages));
+        } catch (error) {
+          console.error("Failed to fetch totalPages:", error);
+        }
+      },
     }),
     generateQuestion: builder.mutation<Question[], QuestionGenerate>({
       query: (body) => ({
@@ -60,4 +106,6 @@ export const {
   useDeleteQuestionMutation,
   useGenerateQuestionMutation,
   useGetGeneratedQuestionsQuery,
+  useConfirmQuestionMutation,
+  useRejectQuestionMutation,
 } = questionsApi;

@@ -1,27 +1,29 @@
 import { Edit2 } from "lucide-react";
+import {
+  useConfirmQuestionMutation,
+  useRejectQuestionMutation,
+} from "../../state/api/questionsApi";
 
 export const GeneratedQuestion = ({
-  key,
+  id,
   questionNumber,
   questionText,
   correctAnswer,
   wrongAnswers,
 }: {
-  key: string;
+  id: string;
   questionNumber: number;
   questionText: string;
   correctAnswer: string;
   wrongAnswers: string[];
 }) => {
-  const answers = [correctAnswer, ...wrongAnswers].sort(
-    () => Math.random() - 0.5
-  );
+  const answers = [correctAnswer, ...wrongAnswers];
+
+  const [confirmQuestion] = useConfirmQuestionMutation();
+  const [rejectQuestion] = useRejectQuestionMutation();
 
   return (
-    <div
-      className="flex items-center justify-between border-b border-gray-300 py-2"
-      key={key}
-    >
+    <div className="flex items-center justify-between border-b border-gray-300 py-2">
       <div className="flex-1">
         <h4 className="text-md font-semibold">
           Question {questionNumber}: {questionText}
@@ -43,18 +45,27 @@ export const GeneratedQuestion = ({
               >
                 {answer === correctAnswer ? "●" : "○"}
               </span>
-              {String.fromCharCode(65 + index)}) {answer}
+              {String.fromCharCode(65 + index)}. {answer}
             </span>
           ))}
         </div>
       </div>
 
       <div className="flex space-x-2">
-        <button className="bg-orange-500 text-white px-3 py-1 rounded-md">
+        <button
+          className="bg-orange-500 text-white px-3 py-1 rounded-md"
+          onClick={() => confirmQuestion(id)}
+        >
           Accept
         </button>
+        <button
+          className="bg-red-500 text-white px-3 py-1 rounded-md"
+          onClick={() => rejectQuestion(id)}
+        >
+          Reject
+        </button>
         <Edit2
-          size={20}
+          size={25}
           className="text-gray-600 cursor-pointer hover:text-black"
         />
       </div>

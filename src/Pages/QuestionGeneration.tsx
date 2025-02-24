@@ -41,17 +41,6 @@ const QuestionGeneration: React.FC = () => {
 
       dispatch({ type: "SET_IS_GENERATED", isGenerated: true });
 
-      // dispatch({
-      //   type: "SET_QUESTIONS",
-      //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      //   questions: response.responseObject.questions.map((q: any) => ({
-      //     id: q._id,
-      //     question: q.locales[0].question,
-      //     correct: q.locales[0].correct,
-      //     wrong: q.locales[0].wrong,
-      //   })),
-      // });
-
       dispatch({
         type: "SET_TOKENS_USED",
         tokensUsed: response.responseObject.totalTokensUsed,
