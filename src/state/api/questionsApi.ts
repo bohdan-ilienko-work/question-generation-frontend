@@ -33,7 +33,7 @@ export const questionsApi = createApi({
       query: (id) => ({
         url: `/questions/${id}`,
       }),
-      providesTags: (result, error, id) => [{ type: "Questions", id }],
+      providesTags: (_result, _error, id) => [{ type: "Questions", id }],
     }),
 
     updateQuestion: builder.mutation<Question, Question>({
@@ -42,7 +42,7 @@ export const questionsApi = createApi({
         method: "PUT",
         body,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Questions", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Questions", id }],
     }),
 
     /** 🔹 Новый запрос на перевод вопроса */

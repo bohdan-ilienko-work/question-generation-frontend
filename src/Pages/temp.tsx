@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Question } from "../types/Question.interface";
-import { QuestionType } from "../types/QuestionType.enum";
+// import { QuestionType } from "../types/QuestionType.enum";
 import {
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,

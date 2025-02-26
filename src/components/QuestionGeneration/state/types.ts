@@ -4,6 +4,7 @@ import { GptModel } from "../../../types/GptModel.type";
 import { QuestionType } from "../../../types/QuestionType.enum";
 
 export interface Question {
+  _id?: string;
   id: string;
   question: string;
   correct: string;

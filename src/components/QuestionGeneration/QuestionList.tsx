@@ -25,7 +25,7 @@ const GeneratedQuestionList: React.FC<GeneratedQuestionListProps> = ({
       <div className="bg-white p-4 rounded-md shadow-md">
         {questions.map((q, index) => (
           <GeneratedQuestion
-            id={q._id}
+            id={q._id!}
             // key={index.toString()}
             questionNumber={index + 1 + (page - 1) * limit}
             questionText={q.locales[0].question}

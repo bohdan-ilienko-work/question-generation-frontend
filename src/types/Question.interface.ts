@@ -3,6 +3,7 @@ import { QuestionStatus } from "./QuestionStatus.type";
 import { QuestionType } from "./QuestionType.enum";
 
 export interface Question {
+  _id?: string;
   id: string;
   categoryId: string;
   status: QuestionStatus;
