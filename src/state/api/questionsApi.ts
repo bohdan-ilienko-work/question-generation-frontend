@@ -45,6 +45,26 @@ export const questionsApi = createApi({
       invalidatesTags: (result, error, { id }) => [{ type: "Questions", id }],
     }),
 
+    /** 🔹 Новый запрос на перевод вопроса */
+    translateQuestion: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          question: string;
+          correct: string;
+          wrong: string[];
+          billedCharacters: number;
+        };
+      },
+      { questionId: string; language: string }
+    >({
+      query: ({ questionId, language }) => ({
+        url: `/questions/translate/${questionId}`,
+        method: "POST",
+        body: { language },
+      }),
+    }),
+
     getQuestionsHistory: builder.query<
       {
         message: string;
@@ -138,4 +158,5 @@ export const {
   useRejectQuestionMutation,
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,
+  useTranslateQuestionMutation,
 } = questionsApi;

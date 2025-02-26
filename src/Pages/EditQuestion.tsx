@@ -1,54 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { Question } from "../types/Question.interface";
 import {
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,
+  useTranslateQuestionMutation,
 } from "../state/api/questionsApi";
-
-// 🔹 Универсальный компонент для инпутов
-const FormInput = ({
-  label,
-  name,
-  control,
-  type = "text",
-  placeholder = "",
-  options = [],
-}: {
-  label: string;
-  name: keyof Question;
-  control: any;
-  type?: string;
-  placeholder?: string;
-  options?: { value: string; label: string }[];
-}) => (
-  <div>
-    <label className="block text-sm font-medium">{label}</label>
-    <Controller
-      name={name}
-      control={control}
-      render={({ field }) =>
-        options.length > 0 ? (
-          <select {...field} className="w-full p-2 border rounded-md">
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            {...field}
-            type={type}
-            placeholder={placeholder}
-            className="w-full p-2 border rounded-md"
-          />
-        )
-      }
-    />
-  </div>
-);
+import EditQuestionFormInput from "../components/EditQuestion/EditQuestionFormInput";
 
 const EditQuestion = () => {
   const navigate = useNavigate();
@@ -59,6 +18,8 @@ const EditQuestion = () => {
   const [updateQuestion, { isLoading: isUpdating }] =
     useUpdateQuestionMutation();
 
+  const [translateQuestion] = useTranslateQuestionMutation();
+
   // 🔹 Инициализация формы
   const { control, handleSubmit, reset } = useForm<Question>({
     defaultValues: question?.responseObject,
@@ -68,6 +29,47 @@ const EditQuestion = () => {
     control,
     name: "locales",
   });
+
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+
+  // 🔹 Функция для перевода вопроса
+  const handleTranslate = async () => {
+    if (!selectedLanguage) return alert("Select a language!");
+
+    try {
+      const response = await translateQuestion({
+        questionId: id!,
+        language: selectedLanguage,
+      }).unwrap();
+
+      console.log("Translation response:", response);
+
+      // 🔹 Добавляем новый перевод в locales
+      append({
+        language: selectedLanguage,
+        question: response.responseObject.question,
+        correct: response.responseObject.correct,
+        wrong: response.responseObject.wrong,
+        isValid: false,
+      });
+
+      setSelectedLanguage(""); // Сбросить выбранный язык
+    } catch (error) {
+      console.error("Translation failed:", error);
+    }
+  };
+
+  const handleAddWrongAnswer = (index: number) => {
+    const locale = fields[index];
+    append({ ...locale, wrong: [...locale.wrong, ""] });
+    remove(index);
+  };
+  const handleRemoveWrongAnswer = (index: number, wIndex: number) => {
+    const locale = fields[index];
+    const newWrong = locale.wrong.filter((_, i) => i !== wIndex);
+    append({ ...locale, wrong: newWrong });
+    remove(index);
+  };
 
   // 🔹 Заполняем форму, когда приходят данные
   useEffect(() => {
@@ -96,7 +98,7 @@ const EditQuestion = () => {
           onClick={() => navigate("/questions-history")}
           className="flex items-center space-x-2 text-blue-500"
         >
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
             viewBox="0 0 20 20"
@@ -112,7 +114,12 @@ const EditQuestion = () => {
               d="M4 5a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z"
               clipRule="evenodd"
             />
-          </svg>
+          </svg> */}
+          <img
+            src="/back-arrow-svgrepo-com.svg"
+            alt="Back"
+            className="h-5 w-5"
+          />
           <span>Back to History</span>
         </button>
       </div>
@@ -120,8 +127,12 @@ const EditQuestion = () => {
       {/* 🔹 Форма */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
-          <FormInput label="Category" name="categoryId" control={control} />
-          <FormInput
+          <EditQuestionFormInput
+            label="Category"
+            name="categoryId"
+            control={control}
+          />
+          <EditQuestionFormInput
             label="Status"
             name="status"
             control={control}
@@ -131,13 +142,13 @@ const EditQuestion = () => {
               { value: "rejected", label: "Rejected" },
             ]}
           />
-          <FormInput
+          <EditQuestionFormInput
             label="Difficulty"
             name="difficulty"
             control={control}
             type="number"
           />
-          <FormInput
+          <EditQuestionFormInput
             label="Type"
             name="type"
             control={control}
@@ -146,21 +157,63 @@ const EditQuestion = () => {
               { value: "multiple_choice", label: "Multiple Choice" },
             ]}
           />
-          <FormInput label="Audio ID" name="audioId" control={control} />
-          <FormInput label="Image ID" name="imageId" control={control} />
-          <FormInput label="Author ID" name="authorId" control={control} />
-          <FormInput
+          <EditQuestionFormInput
+            label="Audio ID"
+            name="audioId"
+            control={control}
+          />
+          <EditQuestionFormInput
+            label="Image ID"
+            name="imageId"
+            control={control}
+          />
+          <EditQuestionFormInput
+            label="Author ID"
+            name="authorId"
+            control={control}
+          />
+          <EditQuestionFormInput
             label="Tags"
             name="tags"
             control={control}
             placeholder="Comma separated"
           />
-          <FormInput
+          <EditQuestionFormInput
             label="Required Languages"
             name="requiredLanguages"
             control={control}
             placeholder="Comma separated"
           />
+
+          {/* 🔹 Блок для перевода */}
+          <div>
+            <label className="block text-sm font-medium">Translate to</label>
+            <div className="flex space-x-4 justify-between items-center">
+              <img
+                src="/deepl-svgrepo-com.svg"
+                alt="DeepL"
+                className="h-8 w-8"
+              />
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="p-2 border rounded-md"
+              >
+                <option value="">Select Language</option>
+                <option value="de">German</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+                <option value="uk">Ukrainian</option>
+              </select>
+              <button
+                type="button"
+                className="p-2 bg-blue-500 text-white rounded-md"
+                onClick={handleTranslate}
+              >
+                Translate
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* 🔹 Локали */}
@@ -182,12 +235,12 @@ const EditQuestion = () => {
                   </button>
                 </div>
 
-                <FormInput
+                <EditQuestionFormInput
                   label="Question"
                   name={`locales.${index}.question` as keyof Question}
                   control={control}
                 />
-                <FormInput
+                <EditQuestionFormInput
                   label="Correct Answer"
                   name={`locales.${index}.correct` as keyof Question}
                   control={control}
@@ -201,7 +254,7 @@ const EditQuestion = () => {
                     type="button"
                     className="text-blue-500 text-sm"
                     onClick={() => {
-                      append({ ...locale, wrong: [...locale.wrong, ""] });
+                      handleAddWrongAnswer(index);
                     }}
                   >
                     + Add Wrong Answer
@@ -209,18 +262,34 @@ const EditQuestion = () => {
                 </div>
 
                 {locale.wrong.map((_, wIndex) => (
-                  <Controller
-                    key={wIndex}
-                    name={`locales.${index}.wrong.${wIndex}`}
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        type="text"
-                        className="w-full p-2 border rounded-md mt-1"
+                  <div key={wIndex} className="flex items-center mt-2">
+                    <Controller
+                      key={wIndex}
+                      name={`locales.${index}.wrong.${wIndex}`}
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          {...field}
+                          type="text"
+                          className="w-full p-2 border rounded-md mt-1"
+                        />
+                      )}
+                    />
+                    {/* нужна кнопка для удаления неправильного ответа с иконкой мусорного бака */}
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => {
+                        handleRemoveWrongAnswer(index, wIndex);
+                      }}
+                    >
+                      <img
+                        src="/trash-xmark-alt-svgrepo-com.svg"
+                        alt="Delete"
+                        className="h-8 w-8"
                       />
-                    )}
-                  />
+                    </button>
+                  </div>
                 ))}
               </div>
             ))}
