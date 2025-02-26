@@ -3,6 +3,7 @@ import {
   useConfirmQuestionMutation,
   useRejectQuestionMutation,
 } from "../../state/api/questionsApi";
+import { useNavigate } from "react-router-dom";
 
 export const GeneratedQuestion = ({
   id,
@@ -21,6 +22,11 @@ export const GeneratedQuestion = ({
 
   const [confirmQuestion] = useConfirmQuestionMutation();
   const [rejectQuestion] = useRejectQuestionMutation();
+  const navigate = useNavigate();
+
+  const handleEdit = () => {
+    navigate(`/edit-question/${id}`);
+  };
 
   return (
     <div className="flex items-center justify-between border-b border-gray-300 py-2">
@@ -67,6 +73,7 @@ export const GeneratedQuestion = ({
         <Edit2
           size={25}
           className="text-gray-600 cursor-pointer hover:text-black"
+          onClick={handleEdit}
         />
       </div>
     </div>

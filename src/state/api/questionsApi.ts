@@ -5,7 +5,7 @@ import { baseQueryWithReauth } from "./authApi";
 import { QuestionType } from "../../types/QuestionType.enum";
 import { GptModel } from "../../types/GptModel.type";
 import { Question } from "../../types/Question.interface";
-import { setTotalPages } from "../questionsSlice";
+import { setGeneratedQuestionsTotalPages } from "../questionsSlice";
 
 export interface QuestionGenerate {
   prompt: string;
@@ -18,13 +18,34 @@ export interface QuestionGenerate {
   model: GptModel;
   requiredLanguages: string[];
 }
-
 export const questionsApi = createApi({
   reducerPath: "questionsApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Questions", "GeneratedQuestions"],
   endpoints: (builder) => ({
-    getQuestions: builder.query<
+    getOneQuestion: builder.query<
+      {
+        message: string;
+        responseObject: Question;
+      },
+      string
+    >({
+      query: (id) => ({
+        url: `/questions/${id}`,
+      }),
+      providesTags: (result, error, id) => [{ type: "Questions", id }],
+    }),
+
+    updateQuestion: builder.mutation<Question, Question>({
+      query: (body) => ({
+        url: `/questions/${body.id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { id }) => [{ type: "Questions", id }],
+    }),
+
+    getQuestionsHistory: builder.query<
       {
         message: string;
         responseObject: {
@@ -43,6 +64,7 @@ export const questionsApi = createApi({
       }),
       providesTags: ["Questions"],
     }),
+
     confirmQuestion: builder.mutation<Question, string>({
       query: (id) => ({
         url: `/questions/${id}/confirm`,
@@ -50,6 +72,7 @@ export const questionsApi = createApi({
       }),
       invalidatesTags: ["Questions", "GeneratedQuestions"],
     }),
+
     rejectQuestion: builder.mutation<Question, string>({
       query: (id) => ({
         url: `/questions/${id}/reject`,
@@ -57,6 +80,7 @@ export const questionsApi = createApi({
       }),
       invalidatesTags: ["GeneratedQuestions"],
     }),
+
     getGeneratedQuestions: builder.query<
       {
         message: string;
@@ -77,12 +101,15 @@ export const questionsApi = createApi({
         try {
           const { data } = await queryFulfilled;
 
-          dispatch(setTotalPages(data.responseObject.totalPages));
+          dispatch(
+            setGeneratedQuestionsTotalPages(data.responseObject.totalPages)
+          );
         } catch (error) {
           console.error("Failed to fetch totalPages:", error);
         }
       },
     }),
+
     generateQuestion: builder.mutation<Question[], QuestionGenerate>({
       query: (body) => ({
         url: "/questions/generate",
@@ -91,6 +118,7 @@ export const questionsApi = createApi({
       }),
       invalidatesTags: ["GeneratedQuestions"],
     }),
+
     deleteQuestion: builder.mutation<void, string>({
       query: (id) => ({
         url: `/questions/${id}`,
@@ -102,10 +130,12 @@ export const questionsApi = createApi({
 });
 
 export const {
-  useGetQuestionsQuery,
+  useGetQuestionsHistoryQuery,
   useDeleteQuestionMutation,
   useGenerateQuestionMutation,
   useGetGeneratedQuestionsQuery,
   useConfirmQuestionMutation,
   useRejectQuestionMutation,
+  useGetOneQuestionQuery,
+  useUpdateQuestionMutation,
 } = questionsApi;

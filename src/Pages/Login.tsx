@@ -37,7 +37,7 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-export function Login() {
+const Login = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loginMutation] = useLoginMutation();
   const navigate = useNavigate();
@@ -139,4 +139,6 @@ export function Login() {
       </div>
     </div>
   );
-}
+};
+
+export default Login;

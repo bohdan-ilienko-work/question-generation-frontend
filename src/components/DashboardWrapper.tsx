@@ -29,12 +29,19 @@ export default function DashboardWrapper() {
           <NavLink
             to="/generate-question"
             className={({ isActive }) =>
-              `p-2 rounded-md text-gray-700 font-medium transition ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-200"
+              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
             Generate Questions
+            <img
+              src="/lamp-charge-svgrepo-com.svg"
+              alt="Lamp icon"
+              className="w-4 h-4"
+            />
           </NavLink>
           <NavLink
             to="/generated-questions"
@@ -47,14 +54,39 @@ export default function DashboardWrapper() {
             Generated Questions
           </NavLink>
           <NavLink
-            to="/settings"
+            to="/questions-history"
             className={({ isActive }) =>
-              `p-2 rounded-md text-gray-700 font-medium transition ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-200"
+              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
               }`
             }
           >
-            Settings
+            <span>Questions History</span>
+            <img
+              src="/list-svgrepo-com.svg"
+              alt="List icon"
+              className="w-4 h-4"
+            />
+          </NavLink>
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <span>Settings</span>
+            <img
+              src="/gear-svgrepo-com.svg"
+              alt="Settings icon"
+              className="w-4 h-4"
+            />
           </NavLink>
           <button
             onClick={handleLogoutClick}

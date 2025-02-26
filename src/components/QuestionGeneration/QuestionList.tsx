@@ -12,8 +12,12 @@ export interface GeneratedQuestionListProps {
 const GeneratedQuestionList: React.FC<GeneratedQuestionListProps> = ({
   questions,
 }) => {
-  const page = useSelector((state: RootState) => state.questions.page);
-  const limit = useSelector((state: RootState) => state.questions.limit);
+  const page = useSelector(
+    (state: RootState) => state.questions.generatedQuestionsFilters.page
+  );
+  const limit = useSelector(
+    (state: RootState) => state.questions.generatedQuestionsFilters.limit
+  );
 
   return questions?.length > 0 ? (
     <div className="mt-6 w-full">
@@ -21,7 +25,7 @@ const GeneratedQuestionList: React.FC<GeneratedQuestionListProps> = ({
       <div className="bg-white p-4 rounded-md shadow-md">
         {questions.map((q, index) => (
           <GeneratedQuestion
-            id={q.id}
+            id={q._id}
             // key={index.toString()}
             questionNumber={index + 1 + (page - 1) * limit}
             questionText={q.locales[0].question}
