@@ -1,28 +1,18 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
 import { useGetGeneratedQuestionsQuery } from "../state/api/questionsApi";
 import { Question } from "../types/Question.interface";
-import { RootState } from "../store";
 import {
   setGeneratedQuestionsPage,
   setGeneratedQuestionsLimit,
-  setGeneratedQuestionsTotalPages,
+  useSelectGeneratedQuestionsFilters,
 } from "../state/questionsSlice";
 
 const GeneratedQuestions = () => {
   const dispatch = useDispatch();
 
-  // Основные параметры
-  const limit = useSelector(
-    (state: RootState) => state.questions.generatedQuestionsFilters.limit
-  );
-  const page = useSelector(
-    (state: RootState) => state.questions.generatedQuestionsFilters.page
-  );
-  const totalPages = useSelector(
-    (state: RootState) => state.questions.generatedQuestionsFilters.totalPages
-  );
+  const { limit, page, totalPages } = useSelectGeneratedQuestionsFilters();
 
   // Фильтры (мокнутые)
   const [filters, setFilters] = useState({
@@ -223,6 +213,7 @@ const GeneratedQuestions = () => {
 
       {/* Список вопросов */}
       <GeneratedQuestionList
+        editPath="/edit-generated-question"
         questions={data?.responseObject.questions as Question[]}
       />
 
@@ -254,7 +245,7 @@ const GeneratedQuestions = () => {
             value={limit}
             onChange={(e) => {
               dispatch(setGeneratedQuestionsLimit(+e.target.value));
-              dispatch(setGeneratedQuestionsTotalPages(1));
+              dispatch(setGeneratedQuestionsPage(1));
             }}
             className="px-4 py-2 bg-gray-300 rounded"
           >

@@ -17,4 +17,6 @@ export interface Question {
   tags: string[];
   locales: ILocaleSchema[];
   isValid: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,29 +1,31 @@
-//Pages/EditQuestion.tsx
-import { useEffect, useState } from "react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+//Pages/EditGeneratedQuestion.tsx
 import { useNavigate, useParams } from "react-router-dom";
-import { Question } from "../types/Question.interface";
 import {
-  useGetOneQuestionQuery,
-  useUpdateQuestionMutation,
-  useTranslateQuestionMutation,
+  useGetOneGeneratedQuestionQuery,
+  useTranslateGeneratedQuestionMutation,
+  useUpdateGeneratedQuestionMutation,
 } from "../state/api/questionsApi";
+import { Question } from "../types/Question.interface";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import EditQuestionFormInput from "../components/EditQuestion/EditQuestionFormInput";
 
-const EditQuestion = () => {
+const EditGeneratedQuestion = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
 
-  // 🔹 Фетч данных с сервера
-  const { data: question, error, isLoading } = useGetOneQuestionQuery(id!);
-  const [updateQuestion, { isLoading: isUpdating }] =
-    useUpdateQuestionMutation();
+  const {
+    data: generatedQuestion,
+    isLoading,
+    error,
+  } = useGetOneGeneratedQuestionQuery(id!);
+  const [updateGeneratedQuestion, { isLoading: isUpdating }] =
+    useUpdateGeneratedQuestionMutation();
 
-  const [translateQuestion] = useTranslateQuestionMutation();
+  const [translateQuestion] = useTranslateGeneratedQuestionMutation();
 
-  // 🔹 Инициализация формы
   const { control, handleSubmit, reset } = useForm<Question>({
-    defaultValues: question?.responseObject,
+    defaultValues: generatedQuestion?.responseObject,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -31,9 +33,8 @@ const EditQuestion = () => {
     name: "locales",
   });
 
-  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en");
 
-  // 🔹 Функция для перевода вопроса
   const handleTranslate = async () => {
     if (!selectedLanguage) return alert("Select a language!");
 
@@ -43,7 +44,7 @@ const EditQuestion = () => {
         language: selectedLanguage,
       }).unwrap();
 
-      console.log("Translation response:", response);
+      //   console.log("Translation response:", response);
 
       // 🔹 Добавляем новый перевод в locales
       append({
@@ -65,30 +66,32 @@ const EditQuestion = () => {
     append({ ...locale, wrong: [...locale.wrong, ""] });
     remove(index);
   };
-  const handleRemoveWrongAnswer = (index: number, wIndex: number) => {
-    const locale = fields[index];
-    const newWrong = locale.wrong.filter((_, i) => i !== wIndex);
-    append({ ...locale, wrong: newWrong });
-    remove(index);
+
+  const handleRemoveWrongAnswer = (localeIndex: number, wrongIndex: number) => {
+    const locale = fields[localeIndex];
+    const updatedWrong = locale.wrong.filter((_, i) => i !== wrongIndex);
+    append({ ...locale, wrong: updatedWrong });
+    remove(localeIndex);
   };
 
-  // 🔹 Заполняем форму, когда приходят данные
   useEffect(() => {
-    if (question) reset(question.responseObject);
-  }, [question, reset]);
+    if (generatedQuestion) {
+      reset(generatedQuestion.responseObject);
+    }
+  }, [generatedQuestion, reset]);
 
   const onSubmit = async (data: Question) => {
     try {
-      await updateQuestion(data).unwrap();
-      navigate("/questions-history");
+      await updateGeneratedQuestion(data).unwrap();
+      navigate("/questions/generated-questions");
     } catch (error) {
-      console.error("Failed to update question:", error);
+      console.error("Update failed:", error);
     }
   };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error fetching question</p>;
-  if (!question) return <p>Question not found</p>;
+  if (!generatedQuestion) return <p>No question found</p>;
 
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-md rounded-md p-6">
@@ -308,4 +311,4 @@ const EditQuestion = () => {
   );
 };
 
-export default EditQuestion;
+export default EditGeneratedQuestion;

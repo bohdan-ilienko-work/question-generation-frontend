@@ -14,7 +14,7 @@ interface LoginRequest {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://68.183.70.111:3000",
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000",
   prepareHeaders: (headers, { getState }) => {
     const token = (
       getState() as {

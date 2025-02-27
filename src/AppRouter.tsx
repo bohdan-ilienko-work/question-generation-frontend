@@ -6,6 +6,7 @@ import {
 import RequireAuth from "./components/RequireAuth";
 import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
+import EditGeneratedQuestion from "./Pages/EditGeneratedQuestion";
 
 // Динамическая загрузка страниц
 const Login = lazy(() => import("./Pages/Login"));
@@ -66,6 +67,14 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       }, // Страница редактирования
+      {
+        path: "edit-generated-question/:id",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <EditGeneratedQuestion />
+          </Suspense>
+        ),
+      },
       {
         path: "settings",
         element: (

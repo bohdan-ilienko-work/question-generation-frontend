@@ -5,7 +5,11 @@ import { baseQueryWithReauth } from "./authApi";
 import { QuestionType } from "../../types/QuestionType.enum";
 import { GptModel } from "../../types/GptModel.type";
 import { Question } from "../../types/Question.interface";
-import { setGeneratedQuestionsTotalPages } from "../questionsSlice";
+import {
+  setGeneratedQuestionsTotalPages,
+  setHistoryQuestionsTotalPages,
+} from "../questionsSlice";
+import { QuestionStatus } from "../../types/QuestionStatus.type";
 
 export interface QuestionGenerate {
   prompt: string;
@@ -45,6 +49,32 @@ export const questionsApi = createApi({
       invalidatesTags: (_result, _error, { id }) => [{ type: "Questions", id }],
     }),
 
+    getOneGeneratedQuestion: builder.query<
+      {
+        message: string;
+        responseObject: Question;
+      },
+      string
+    >({
+      query: (id) => ({
+        url: `/questions/generated/${id}`,
+      }),
+      providesTags: (_result, _error, id) => [
+        { type: "GeneratedQuestions", id },
+      ],
+    }),
+
+    updateGeneratedQuestion: builder.mutation<Question, Question>({
+      query: (body) => ({
+        url: `/questions/generated/${body.id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "GeneratedQuestions", id },
+      ],
+    }),
+
     /** 🔹 Новый запрос на перевод вопроса */
     translateQuestion: builder.mutation<
       {
@@ -65,6 +95,25 @@ export const questionsApi = createApi({
       }),
     }),
 
+    translateGeneratedQuestion: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          question: string;
+          correct: string;
+          wrong: string[];
+          billedCharacters: number;
+        };
+      },
+      { questionId: string; language: string }
+    >({
+      query: ({ questionId, language }) => ({
+        url: `/questions/generated/translate/${questionId}`,
+        method: "POST",
+        body: { language },
+      }),
+    }),
+
     getQuestionsHistory: builder.query<
       {
         message: string;
@@ -76,13 +125,35 @@ export const questionsApi = createApi({
       {
         limit: number;
         page: number;
+        difficulty?: string;
+        status?: QuestionStatus;
+        localeIncluded?: string;
+        localeExcluded?: string;
+        category?: string;
+        title?: string;
+        type?: QuestionType;
       }
     >({
-      query: ({ limit, page }) => ({
+      // query: ({ limit, page }) => ({
+      //   url: "/questions",
+      //   params: { limit, page },
+      // }),
+      query: ({ limit, page, ...filters }) => ({
         url: "/questions",
-        params: { limit, page },
+        params: { limit, page, ...filters },
       }),
       providesTags: ["Questions"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          dispatch(
+            setHistoryQuestionsTotalPages(data.responseObject.totalPages)
+          );
+        } catch (error) {
+          console.error("Failed to fetch totalPages:", error);
+        }
+      },
     }),
 
     confirmQuestion: builder.mutation<Question, string>({
@@ -159,4 +230,7 @@ export const {
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,
   useTranslateQuestionMutation,
+  useGetOneGeneratedQuestionQuery,
+  useUpdateGeneratedQuestionMutation,
+  useTranslateGeneratedQuestionMutation,
 } = questionsApi;

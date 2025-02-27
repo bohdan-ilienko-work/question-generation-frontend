@@ -1,4 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+import { QuestionStatus } from "../types/QuestionStatus.type";
+import { QuestionType } from "../types/QuestionType.enum";
 
 interface QuestionsState {
   generatedQuestionsFilters: {
@@ -10,12 +14,14 @@ interface QuestionsState {
     limit: number;
     page: number;
     totalPages: number;
+    title?: string;
+    difficulty?: string;
+    status?: QuestionStatus;
+    localeIncluded?: string;
+    localeExcluded?: string;
+    category?: string;
+    type?: QuestionType;
   };
-  // limit: number;
-  // page: number;
-  // totalPages: number;
-  //   loading: boolean;
-  //   error: string | null;
 }
 
 const initialState: QuestionsState = {
@@ -29,29 +35,12 @@ const initialState: QuestionsState = {
     page: 1,
     totalPages: 0,
   },
-  // limit: 5,
-  // page: 1,
-  // totalPages: 0,
-  //   loading: false,
-  //   error: null,
 };
 
 export const questionsSlice = createSlice({
   name: "questions",
   initialState,
   reducers: {
-    // setLimit: (state, action: PayloadAction<number>) => {
-    //   state.limit = action.payload;
-    // },
-    // setPage: (state, action: PayloadAction<number>) => {
-    //   state.page = action.payload;
-    // },
-    // setTotalPages: (state, action: PayloadAction<number>) => {
-    //   state.totalPages = action.payload;
-    // },
-    // setLoading: (state, action: PayloadAction<boolean>) => {
-    //   state.loading = action.payload;
-    // },
     setGeneratedQuestionsLimit: (state, action: PayloadAction<number>) => {
       state.generatedQuestionsFilters.limit = action.payload;
     },
@@ -61,6 +50,7 @@ export const questionsSlice = createSlice({
     setGeneratedQuestionsTotalPages: (state, action: PayloadAction<number>) => {
       state.generatedQuestionsFilters.totalPages = action.payload;
     },
+    //#region History actions export
     setHistoryQuestionsLimit: (state, action: PayloadAction<number>) => {
       state.historyQuestionsFilters.limit = action.payload;
     },
@@ -70,11 +60,41 @@ export const questionsSlice = createSlice({
     setHistoryQuestionsTotalPages: (state, action: PayloadAction<number>) => {
       state.historyQuestionsFilters.totalPages = action.payload;
     },
+    setHistoryQuestionsTitle: (state, action: PayloadAction<string>) => {
+      state.historyQuestionsFilters.title = action.payload;
+    },
+    setHistoryQuestionsDifficulty: (state, action: PayloadAction<string>) => {
+      state.historyQuestionsFilters.difficulty = action.payload;
+    },
+    setHistoryQuestionsStatus: (
+      state,
+      action: PayloadAction<QuestionStatus>
+    ) => {
+      state.historyQuestionsFilters.status = action.payload;
+    },
+    setHistoryQuestionsLocaleIncluded: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.historyQuestionsFilters.localeIncluded = action.payload;
+    },
+    setHistoryQuestionsLocaleExcluded: (
+      state,
+      action: PayloadAction<string>
+    ) => {
+      state.historyQuestionsFilters.localeExcluded = action.payload;
+    },
+    setHistoryQuestionsCategory: (state, action: PayloadAction<string>) => {
+      state.historyQuestionsFilters.category = action.payload;
+    },
+    setHistoryQuestionsType: (state, action: PayloadAction<QuestionType>) => {
+      state.historyQuestionsFilters.type = action.payload;
+    },
+    //#endregion
   },
 });
 
-// export const { setLimit, setPage, setTotalPages } = questionsSlice.actions;
-
+// 🔹 Экспорт экшенов
 export const {
   setGeneratedQuestionsLimit,
   setGeneratedQuestionsPage,
@@ -82,6 +102,28 @@ export const {
   setHistoryQuestionsLimit,
   setHistoryQuestionsPage,
   setHistoryQuestionsTotalPages,
+  setHistoryQuestionsTitle,
+  setHistoryQuestionsDifficulty,
+  setHistoryQuestionsStatus,
+  setHistoryQuestionsLocaleIncluded,
+  setHistoryQuestionsLocaleExcluded,
+  setHistoryQuestionsCategory,
+  setHistoryQuestionsType,
 } = questionsSlice.actions;
 
+// 🔹 Кастомный хук для получения `generatedQuestionsFilters`
+export const useSelectGeneratedQuestionsFilters = () => {
+  return useSelector(
+    (state: RootState) => state.questions.generatedQuestionsFilters
+  );
+};
+
+// 🔹 Кастомный хук для получения `historyQuestionsFilters`
+export const useSelectHistoryQuestionsFilters = () => {
+  return useSelector(
+    (state: RootState) => state.questions.historyQuestionsFilters
+  );
+};
+
+// 🔹 Экспорт редюсера
 export default questionsSlice.reducer;

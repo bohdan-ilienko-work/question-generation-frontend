@@ -1,29 +1,33 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useGetQuestionsHistoryQuery } from "../state/api/questionsApi";
 import {
+  setHistoryQuestionsDifficulty,
   setHistoryQuestionsLimit,
-  setHistoryQuestionsTotalPages,
+  setHistoryQuestionsPage,
+  setHistoryQuestionsStatus,
+  setHistoryQuestionsTitle,
+  setHistoryQuestionsType,
+  useSelectHistoryQuestionsFilters,
 } from "../state/questionsSlice";
-import { RootState } from "../store";
 import { useEffect, useRef } from "react";
 import { Question } from "../types/Question.interface";
 import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
+import { QuestionType } from "../types/QuestionType.enum";
+import { QuestionStatus } from "../types/QuestionStatus.type";
+
 const QuestionsHistory = () => {
   const dispatch = useDispatch();
 
-  const limit = useSelector(
-    (state: RootState) => state.questions.historyQuestionsFilters.limit
-  );
-  const page = useSelector(
-    (state: RootState) => state.questions.historyQuestionsFilters.page
-  );
-  const totalPages = useSelector(
-    (state: RootState) => state.questions.historyQuestionsFilters.totalPages
-  );
+  const { limit, page, totalPages, difficulty, type, title, status } =
+    useSelectHistoryQuestionsFilters();
 
   const { data, isLoading, error, refetch } = useGetQuestionsHistoryQuery({
     limit,
     page,
+    difficulty,
+    type,
+    title,
+    status,
   });
 
   const isFirstRender = useRef(true);
@@ -33,7 +37,7 @@ const QuestionsHistory = () => {
       refetch();
     }
     isFirstRender.current = false;
-  }, [limit, page]);
+  }, [limit, page, difficulty, type, title, refetch]);
 
   if (isLoading)
     return (
@@ -59,7 +63,77 @@ const QuestionsHistory = () => {
 
   return (
     <div className="flex flex-col items-center space-y-4">
+      <div className="bg-white p-4 rounded-md shadow-md flex flex-wrap gap-4 items-center">
+        {/* Фильтр по сложности */}
+        <div>
+          <label className="block text-sm font-medium">Difficulty</label>
+          <select
+            value={difficulty}
+            onChange={(e) =>
+              dispatch(setHistoryQuestionsDifficulty(e.target.value))
+            }
+            className="w-full p-2 border rounded-md"
+          >
+            <option value="">All</option>
+            <option value="1">1 (Easy)</option>
+            <option value="2">2</option>
+            <option value="3">3 (Medium)</option>
+            <option value="4">4</option>
+            <option value="5">5 (Hard)</option>
+          </select>
+        </div>
+        {/* Фильтр типа вопроса */}
+        <div>
+          <label className="block text-sm font-medium">Type</label>
+          <select
+            value={type}
+            onChange={(e) =>
+              dispatch(setHistoryQuestionsType(e.target.value as QuestionType))
+            }
+            className="w-full p-2 border rounded-md"
+          >
+            <option value="">All</option>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="one_choice">One Choice</option>
+          </select>
+        </div>
+
+        {/* Фильтр по названию вопроса */}
+        <div>
+          <label className="block text-sm font-medium">Question Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => dispatch(setHistoryQuestionsTitle(e.target.value))}
+            className="w-full p-2 border rounded-md"
+            placeholder="Enter question title..."
+          />
+        </div>
+
+        {/* Фильтр по статусу */}
+        <div>
+          <label className="block text-sm font-medium">Status</label>
+          <select
+            value={status}
+            onChange={(e) =>
+              dispatch(
+                setHistoryQuestionsStatus(e.target.value as QuestionStatus)
+              )
+            }
+            className="w-full p-2 border rounded-md"
+          >
+            <option value="">All</option>
+            <option value="proof_reading">Proof Reading</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Question list */}
       <GeneratedQuestionList
+        editPath="/edit-question"
         questions={data?.responseObject.questions as Question[]}
       />
 
@@ -68,7 +142,7 @@ const QuestionsHistory = () => {
         <button
           className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
           onClick={() =>
-            dispatch(setHistoryQuestionsLimit(page > 1 ? page - 1 : 1))
+            dispatch(setHistoryQuestionsPage(page > 1 ? page - 1 : 1))
           }
           disabled={page === 1}
         >
@@ -79,7 +153,9 @@ const QuestionsHistory = () => {
         </span>
         <button
           className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-          onClick={() => dispatch(setHistoryQuestionsLimit(page + 1))}
+          onClick={() =>
+            dispatch(setHistoryQuestionsPage(page < totalPages ? page + 1 : 1))
+          }
           disabled={page >= totalPages}
         >
           Next
@@ -91,10 +167,11 @@ const QuestionsHistory = () => {
             value={limit}
             onChange={(e) => {
               dispatch(setHistoryQuestionsLimit(+e.target.value));
-              dispatch(setHistoryQuestionsTotalPages(1));
+              dispatch(setHistoryQuestionsPage(1));
             }}
             className="px-4 py-2 bg-gray-300 rounded"
           >
+            <option value="1">1</option>
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
