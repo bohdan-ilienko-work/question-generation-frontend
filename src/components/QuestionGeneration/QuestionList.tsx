@@ -1,6 +1,6 @@
 import React from "react";
 import { GeneratedQuestion } from "./GeneratedQuestion";
-import { Question } from "../../types/Question.interface";
+import { Question } from "../../types";
 import { NavLink } from "react-router-dom";
 
 export interface GeneratedQuestionListProps {

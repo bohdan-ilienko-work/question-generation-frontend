@@ -1,5 +1,5 @@
 import { Controller } from "react-hook-form";
-import { Question } from "../../types/Question.interface";
+import { Question } from "../../types";
 
 // 🔹 Универсальный компонент для инпутов
 const EditQuestionFormInput = ({
