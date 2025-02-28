@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { useLoginMutation } from "../state/api/authApi";
 import { useNavigate } from "react-router-dom";
-import { setTokens } from "../state/authSlice";
+import { setTokens } from "../state/slices/authSlice";
 import { useDispatch } from "react-redux";
 
 // Определение типов для `useReducer`

@@ -8,12 +8,12 @@ import {
   setHistoryQuestionsTitle,
   setHistoryQuestionsType,
   useSelectHistoryQuestionsFilters,
-} from "../state/questionsSlice";
+} from "../state";
 import { useEffect, useRef } from "react";
-import { Question } from "../types/Question.interface";
+import { Question } from "../types";
 import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
-import { QuestionType } from "../types/QuestionType.enum";
-import { QuestionStatus } from "../types/QuestionStatus.type";
+import { QuestionType } from "../types/enums/QuestionType.enum";
+import { QuestionStatus } from "../types/types/QuestionStatus.type";
 
 const QuestionsHistory = () => {
   const dispatch = useDispatch();

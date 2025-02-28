@@ -1,5 +1,5 @@
 // reducer.ts
-import { QuestionType } from "../../../types/QuestionType.enum";
+import { QuestionType } from "../../../types/enums/QuestionType.enum";
 import { GenerateQuestionSettings, Action } from "./types";
 
 export const initialState: GenerateQuestionSettings = {

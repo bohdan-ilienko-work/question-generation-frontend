@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { authSlice, logout } from "../authSlice";
+import { authSlice, logout } from "../slices/authSlice";
 
 interface AuthResponse {
   responseObject: {

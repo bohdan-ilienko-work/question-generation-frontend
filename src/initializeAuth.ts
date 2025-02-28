@@ -1,4 +1,4 @@
-import { setLoading, logout, setAuthorized } from "./state/authSlice";
+import { setLoading, logout, setAuthorized } from "./state/slices/authSlice";
 import { authApi } from "./state/api/authApi";
 import { AppDispatch } from "./store";
 

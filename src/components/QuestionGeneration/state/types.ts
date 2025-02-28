@@ -1,7 +1,7 @@
 // types.ts
 
-import { GptModel } from "../../../types/GptModel.type";
-import { QuestionType } from "../../../types/QuestionType.enum";
+import { GptModel } from "../../../types/types/GptModel.type";
+import { QuestionType } from "../../../types/enums/QuestionType.enum";
 
 export interface Question {
   _id?: string;

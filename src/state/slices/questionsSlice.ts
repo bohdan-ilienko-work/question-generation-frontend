@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import { RootState } from "../store";
-import { QuestionStatus } from "../types/QuestionStatus.type";
-import { QuestionType } from "../types/QuestionType.enum";
+import { RootState } from "../../store";
+import { QuestionStatus, QuestionType } from "../../types";
 
 interface QuestionsState {
   generatedQuestionsFilters: {

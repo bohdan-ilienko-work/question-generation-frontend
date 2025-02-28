@@ -72,6 +72,24 @@ export default function DashboardWrapper() {
           </NavLink>
 
           <NavLink
+            to="/deepl-logs"
+            className={({ isActive }) =>
+              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`
+            }
+          >
+            <span>DeepL Logs</span>
+            <img
+              src="/deepl-svgrepo-com.svg"
+              alt="DeepL icon"
+              className="w-4 h-4"
+            />
+          </NavLink>
+
+          <NavLink
             to="/settings"
             className={({ isActive }) =>
               `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${

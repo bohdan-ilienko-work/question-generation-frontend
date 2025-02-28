@@ -116,7 +116,8 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
         name="type"
         type="select"
         value={state.type}
-        selectOptions={["one_choice", "multiple_choice"]}
+        // selectOptions={["one_choice", "multiple_choice"]}
+        selectOptions={["one_choice"]}
         onChange={handleInputChange}
       />
 

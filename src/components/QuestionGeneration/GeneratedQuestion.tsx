@@ -4,7 +4,7 @@ import {
   useRejectQuestionMutation,
 } from "../../state/api/questionsApi";
 import { useNavigate } from "react-router-dom";
-import { Question } from "../../types/Question.interface";
+import { Question } from "../../types";
 
 interface GeneratedQuestionProps {
   question: Question;

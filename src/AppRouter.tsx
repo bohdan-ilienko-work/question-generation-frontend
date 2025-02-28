@@ -7,6 +7,7 @@ import RequireAuth from "./components/RequireAuth";
 import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
 import EditGeneratedQuestion from "./Pages/EditGeneratedQuestion";
+import DeeplLogs from "./Pages/DeeplLogs";
 
 // Динамическая загрузка страниц
 const Login = lazy(() => import("./Pages/Login"));
@@ -72,6 +73,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<p>Loading...</p>}>
             <EditGeneratedQuestion />
+          </Suspense>
+        ),
+      },
+      {
+        path: "deepl-logs",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <DeeplLogs />
           </Suspense>
         ),
       },

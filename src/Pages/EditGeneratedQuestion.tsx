@@ -5,7 +5,7 @@ import {
   useTranslateGeneratedQuestionMutation,
   useUpdateGeneratedQuestionMutation,
 } from "../state/api/questionsApi";
-import { Question } from "../types/Question.interface";
+import { Question } from "../types";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import EditQuestionFormInput from "../components/EditQuestion/EditQuestionFormInput";
@@ -51,7 +51,7 @@ const EditGeneratedQuestion = () => {
         language: selectedLanguage,
         question: response.responseObject.question,
         correct: response.responseObject.correct,
-        wrong: response.responseObject.wrong,
+        wrong: response.responseObject.wrong || [],
         isValid: false,
       });
 
@@ -63,7 +63,7 @@ const EditGeneratedQuestion = () => {
 
   const handleAddWrongAnswer = (index: number) => {
     const locale = fields[index];
-    append({ ...locale, wrong: [...locale.wrong, ""] });
+    append({ ...locale, wrong: [...(locale.wrong || []), ""] });
     remove(index);
   };
 
@@ -248,7 +248,7 @@ const EditGeneratedQuestion = () => {
                   </button>
                 </div>
 
-                {locale.wrong.map((_, wIndex) => (
+                {locale.wrong?.map((_, wIndex) => (
                   <div key={wIndex} className="flex items-center mt-2">
                     <Controller
                       key={wIndex}

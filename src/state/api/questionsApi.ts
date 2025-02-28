@@ -2,14 +2,14 @@
 
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./authApi";
-import { QuestionType } from "../../types/QuestionType.enum";
-import { GptModel } from "../../types/GptModel.type";
-import { Question } from "../../types/Question.interface";
+import { QuestionType } from "../../types/enums/QuestionType.enum";
+import { GptModel } from "../../types/types/GptModel.type";
+import { Question } from "../../types";
 import {
   setGeneratedQuestionsTotalPages,
   setHistoryQuestionsTotalPages,
-} from "../questionsSlice";
-import { QuestionStatus } from "../../types/QuestionStatus.type";
+} from "../slices";
+import { QuestionStatus } from "../../types/types/QuestionStatus.type";
 
 export interface QuestionGenerate {
   prompt: string;

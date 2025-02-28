@@ -2,12 +2,12 @@ import { useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
 import { useGetGeneratedQuestionsQuery } from "../state/api/questionsApi";
-import { Question } from "../types/Question.interface";
+import { Question } from "../types";
 import {
   setGeneratedQuestionsPage,
   setGeneratedQuestionsLimit,
   useSelectGeneratedQuestionsFilters,
-} from "../state/questionsSlice";
+} from "../state";
 
 const GeneratedQuestions = () => {
   const dispatch = useDispatch();

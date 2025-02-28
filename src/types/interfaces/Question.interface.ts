@@ -1,6 +1,6 @@
 import { ILocaleSchema } from "./LocaleSchema.interface";
-import { QuestionStatus } from "./QuestionStatus.type";
-import { QuestionType } from "./QuestionType.enum";
+import { QuestionStatus } from "../types";
+import { QuestionType } from "../enums";
 
 export interface Question {
   _id?: string;
