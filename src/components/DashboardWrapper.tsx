@@ -3,22 +3,41 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useLogoutMutation } from "../state/api/authApi";
 import LogoutConfirmationModal from "./LogoutConfirmationModal";
 
+// 🔹 Компонент для ссылок в сайдбаре с анимированным подчёркиванием
+const SidebarLink = ({
+  to,
+  label,
+  icon,
+}: {
+  to: string;
+  label: string;
+  icon: string;
+}) => (
+  <NavLink
+    to={to}
+    className={({ isActive }) =>
+      `relative flex items-center justify-between w-full p-2 font-medium transition-colors ${
+        isActive
+          ? "text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-100 after:transition-transform after:duration-300"
+          : "text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100"
+      }`
+    }
+  >
+    <span>{label}</span>
+    <img src={icon} alt={`${label} icon`} className="w-4 h-4" />
+  </NavLink>
+);
+
 export default function DashboardWrapper() {
   const [logout] = useLogoutMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleLogoutClick = () => {
-    setIsModalOpen(true);
-  };
-
+  const handleLogoutClick = () => setIsModalOpen(true);
   const confirmLogout = () => {
     logout();
     setIsModalOpen(false);
   };
-
-  const cancelLogout = () => {
-    setIsModalOpen(false);
-  };
+  const cancelLogout = () => setIsModalOpen(false);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -26,86 +45,38 @@ export default function DashboardWrapper() {
       <aside className="w-64 bg-white shadow-md p-4">
         <h1 className="text-2xl font-bold text-center mb-6">Dashboard</h1>
         <nav className="flex flex-col space-y-2">
-          <NavLink
+          <SidebarLink
             to="/generate-question"
-            className={({ isActive }) =>
-              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
-                isActive
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            Generate Questions
-            <img
-              src="/lamp-charge-svgrepo-com.svg"
-              alt="Lamp icon"
-              className="w-4 h-4"
-            />
-          </NavLink>
-          <NavLink
+            label="Generate Questions"
+            icon="/openai-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/generated-questions"
-            className={({ isActive }) =>
-              `p-2 rounded-md text-gray-700 font-medium transition ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-200"
-              }`
-            }
-          >
-            Generated Questions
-          </NavLink>
-          <NavLink
+            label="Generated Questions"
+            icon="/list-ul-alt-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/questions-history"
-            className={({ isActive }) =>
-              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
-                isActive
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <span>Questions History</span>
-            <img
-              src="/list-svgrepo-com.svg"
-              alt="List icon"
-              className="w-4 h-4"
-            />
-          </NavLink>
-
-          <NavLink
+            label="Questions History"
+            icon="/list-ul-alt-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/deepl-logs"
-            className={({ isActive }) =>
-              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
-                isActive
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <span>DeepL Logs</span>
-            <img
-              src="/deepl-svgrepo-com.svg"
-              alt="DeepL icon"
-              className="w-4 h-4"
-            />
-          </NavLink>
-
-          <NavLink
+            label="DeepL Logs"
+            icon="/deepl-svgrepo-com.svg"
+          />
+          <SidebarLink
+            to="/translated-questions"
+            label="Translated Questions"
+            icon="/language-translation-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/settings"
-            className={({ isActive }) =>
-              `flex items-center justify-between w-full p-2 rounded-md font-medium transition ${
-                isActive
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-700 hover:bg-gray-200"
-              }`
-            }
-          >
-            <span>Settings</span>
-            <img
-              src="/gear-svgrepo-com.svg"
-              alt="Settings icon"
-              className="w-4 h-4"
-            />
-          </NavLink>
+            label="Settings"
+            icon="/settings-svgrepo-com.svg"
+          />
+
+          {/* Logout Button */}
           <button
             onClick={handleLogoutClick}
             className="p-2 rounded-md text-white bg-red-500 font-medium transition hover:bg-red-600 flex items-center"

@@ -8,8 +8,9 @@ import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
 import EditGeneratedQuestion from "./Pages/EditGeneratedQuestion";
 import DeeplLogs from "./Pages/DeeplLogs";
+import TranslatedQuestions from "./Pages/TranslatedQuestions";
 
-// Динамическая загрузка страниц
+// Динамическая загрузка страницw
 const Login = lazy(() => import("./Pages/Login"));
 const QuestionGeneration = lazy(() => import("./Pages/QuestionGeneration"));
 const GeneratedQuestions = lazy(() => import("./Pages/GeneratedQuestions"));
@@ -73,6 +74,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<p>Loading...</p>}>
             <EditGeneratedQuestion />
+          </Suspense>
+        ),
+      },
+      {
+        path: "translated-questions",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <TranslatedQuestions />
           </Suspense>
         ),
       },
