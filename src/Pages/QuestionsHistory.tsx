@@ -14,6 +14,7 @@ import { Question } from "../types";
 import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
 import { QuestionType } from "../types/enums/QuestionType.enum";
 import { QuestionStatus } from "../types/types/QuestionStatus.type";
+import Loader from "../components/Loader";
 
 const QuestionsHistory = () => {
   const dispatch = useDispatch();
@@ -39,16 +40,7 @@ const QuestionsHistory = () => {
     isFirstRender.current = false;
   }, [limit, page, difficulty, type, title, refetch]);
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="flex space-x-2">
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-        </div>
-      </div>
-    );
+  if (isLoading) return <Loader />;
 
   if (error) {
     return (
