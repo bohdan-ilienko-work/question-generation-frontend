@@ -4,6 +4,7 @@ import {
   useTranslateQuestionMutation,
   useUpdateQuestionMutation,
 } from "../state";
+import { useNavigate } from "react-router-dom";
 
 const TranslatedQuestionItem = ({
   question,
@@ -12,6 +13,7 @@ const TranslatedQuestionItem = ({
   question: Question;
   index: number;
 }) => {
+  const navigate = useNavigate();
   const [selectedLocale, setSelectedLocale] = useState(
     question.locales[0]?.language || "en"
   );
@@ -172,6 +174,20 @@ const TranslatedQuestionItem = ({
               className="w-4 h-4 me-4"
             />
           )}
+        </button>
+
+        <button
+          onClick={() =>
+            navigate(`/edit-question/${question.id || question._id}`)
+          }
+          className="px-4 py-3 text-lg bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-3"
+        >
+          Edit
+          <img
+            src="/edit-button-svgrepo-com.svg"
+            alt="Edit"
+            className="w-4 h-4 me-4"
+          />
         </button>
       </div>
 
