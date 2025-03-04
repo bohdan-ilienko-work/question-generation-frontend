@@ -30,7 +30,7 @@ const QuestionGeneration: React.FC = () => {
       const response: any = await generateQuestion({
         prompt: state.prompt,
         difficulty: +state.difficulty,
-        max_tokens: state.max_tokens,
+        // max_tokens: state.max_tokens,
         count: state.count,
         category: state.category,
         temperature: state.temperature,

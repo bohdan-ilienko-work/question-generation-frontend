@@ -4,7 +4,7 @@ import InputField from "./InputField";
 interface GenerateQuestionsFormProps {
   state: {
     category: string;
-    max_tokens: number;
+    // max_tokens: number;
     count: number;
     temperature: number;
     difficulty: 1 | 2 | 3 | 4 | 5;
@@ -27,7 +27,6 @@ interface GenerateQuestionsFormProps {
     type: "SET_VALUE";
     field:
       | "category"
-      | "max_tokens"
       | "count"
       | "temperature"
       | "difficulty"
@@ -45,7 +44,7 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
   const handleInputChange = (name: string, value: string | number) => {
     dispatch({
       type: "SET_VALUE",
-      field: name as "category" | "max_tokens" | "count",
+      field: name as "category" | "count",
       value,
     });
   };
@@ -75,13 +74,13 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
         selectOptions={["Art", "Science", "History"]}
         onChange={handleInputChange}
       />
-      <InputField
+      {/* <InputField
         label="Max Tokens"
         name="max_tokens"
         type="number"
         value={state.max_tokens}
         onChange={handleInputChange}
-      />
+      /> */}
       <InputField
         label="Count"
         name="count"

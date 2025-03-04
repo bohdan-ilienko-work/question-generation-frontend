@@ -14,7 +14,7 @@ export interface Question {
 export interface GenerateQuestionSettings {
   category: string;
   prompt: string;
-  max_tokens: number;
+  // max_tokens: number;
   count: number;
   questions: Question[];
   temperature: number;
