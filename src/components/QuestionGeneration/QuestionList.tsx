@@ -1,3 +1,4 @@
+//src/components/QuestionGeneration/QuestionList.tsx
 import React from "react";
 import { GeneratedQuestion } from "./GeneratedQuestion";
 import { Question } from "../../types";

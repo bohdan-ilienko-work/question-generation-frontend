@@ -172,6 +172,25 @@ export const questionsApi = createApi({
       invalidatesTags: ["GeneratedQuestions"],
     }),
 
+    // 🔹 this endpoint for confirming many questions
+    confirmQuestions: builder.mutation<Question[], string[]>({
+      query: (ids) => ({
+        url: `/questions/confirm`,
+        method: "POST",
+        body: { ids },
+      }),
+      invalidatesTags: ["Questions", "GeneratedQuestions"],
+    }),
+
+    rejectQuestions: builder.mutation<Question[], string[]>({
+      query: (ids) => ({
+        url: `/questions/reject`,
+        method: "DELETE",
+        body: { ids },
+      }),
+      invalidatesTags: ["GeneratedQuestions"],
+    }),
+
     getGeneratedQuestions: builder.query<
       {
         message: string;
@@ -227,6 +246,8 @@ export const {
   useGetGeneratedQuestionsQuery,
   useConfirmQuestionMutation,
   useRejectQuestionMutation,
+  useConfirmQuestionsMutation,
+  useRejectQuestionsMutation,
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,
   useTranslateQuestionMutation,

@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
 import { useGetGeneratedQuestionsQuery } from "../state/api/questionsApi";
 import { Question } from "../types";
 import {
@@ -8,11 +7,30 @@ import {
   setGeneratedQuestionsLimit,
   useSelectGeneratedQuestionsFilters,
 } from "../state";
+import { Edit2 } from "lucide-react";
+import {
+  useConfirmQuestionMutation,
+  useRejectQuestionMutation,
+  useConfirmQuestionsMutation,
+  useRejectQuestionsMutation,
+} from "../state/api/questionsApi";
+import { useNavigate } from "react-router-dom";
 
 const GeneratedQuestions = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { limit, page, totalPages } = useSelectGeneratedQuestionsFilters();
+
+  const { data, error, isLoading, refetch } = useGetGeneratedQuestionsQuery({
+    limit,
+    page,
+  });
+
+  const isFirstRender = useRef(true);
+  const [selectedQuestions, setSelectedQuestions] = useState<Set<string>>(
+    new Set()
+  );
 
   // Фильтры (мокнутые)
   const [filters, setFilters] = useState({
@@ -24,23 +42,40 @@ const GeneratedQuestions = () => {
     localeExcluded: "",
     tags: "",
   });
-
-  // Получение вопросов
-  const { data, error, isLoading, refetch } = useGetGeneratedQuestionsQuery({
-    limit,
-    page,
-  });
-
-  // Флаг, чтобы не запускать рефетч при первом рендере
-  const isFirstRender = useRef(true);
-
   useEffect(() => {
     if (!isFirstRender.current) {
-      console.log("Applying filters:", filters);
       refetch();
     }
     isFirstRender.current = false;
-  }, [limit, page, filters]);
+  }, [limit, page]);
+
+  const [confirmQuestion] = useConfirmQuestionMutation();
+  const [rejectQuestion] = useRejectQuestionMutation();
+
+  const [confirmQuestions] = useConfirmQuestionsMutation();
+  const [rejectQuestions] = useRejectQuestionsMutation();
+
+  const toggleSelection = (id: string) => {
+    setSelectedQuestions((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(id)) {
+        newSelection.delete(id);
+      } else {
+        newSelection.add(id);
+      }
+      return newSelection;
+    });
+  };
+
+  const handleBulkConfirm = () => {
+    confirmQuestions(Array.from(selectedQuestions));
+    setSelectedQuestions(new Set());
+  };
+
+  const handleBulkReject = () => {
+    rejectQuestions(Array.from(selectedQuestions));
+    setSelectedQuestions(new Set());
+  };
 
   if (isLoading)
     return (
@@ -63,11 +98,10 @@ const GeneratedQuestions = () => {
       </p>
     );
   }
-
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center space-y-2 w-full">
       {/* Фильтры */}
-      <div className="bg-white p-4 rounded-md shadow-md flex flex-wrap gap-4 items-center">
+      <div className="bg-white p-2 rounded-md shadow-md flex flex-wrap gap-4 items-center">
         {/* Фильтр по категории */}
         <div>
           <label className="block text-sm font-medium">Category</label>
@@ -210,14 +244,139 @@ const GeneratedQuestions = () => {
           />
         </div>
       </div>
+      {selectedQuestions.size > 0 && (
+        <div className="flex space-x-4 mb-4">
+          <button
+            className="bg-green-500 text-white px-3 py-1 rounded-md"
+            onClick={handleBulkConfirm}
+          >
+            Accept Selected
+          </button>
+          <button
+            className="bg-red-500 text-white px-3 py-1 rounded-md"
+            onClick={handleBulkReject}
+          >
+            Reject Selected
+          </button>
+        </div>
+      )}
+      <h3 className="text-lg font-semibold">Generated Questions</h3>
+      {/* Таблица */}
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse border border-gray-300 bg-white shadow-md rounded-lg">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 px-4 py-2">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedQuestions(
+                        new Set(
+                          data?.responseObject.questions.map(
+                            (q: Question) => q.id
+                          )
+                        )
+                      );
+                    } else {
+                      setSelectedQuestions(new Set());
+                    }
+                  }}
+                  checked={
+                    selectedQuestions.size ===
+                    data?.responseObject.questions.length
+                  }
+                />
+              </th>
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Question
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Answers</th>
+              <th className="border border-gray-300 px-4 py-2">Difficulty</th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Type</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.responseObject.questions.map((question: Question) => {
+              const questionId =
+                question.id || question._id || Math.random().toString(36);
 
-      {/* Список вопросов */}
-      <GeneratedQuestionList
-        editPath="/edit-generated-question"
-        questions={data?.responseObject.questions as Question[]}
-      />
+              const answers = [
+                question.locales[0].correct,
+                ...(question.locales[0].wrong || []),
+              ];
 
-      {/* Pagination */}
+              return (
+                <tr key={questionId} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedQuestions.has(questionId)}
+                      onChange={() => toggleSelection(questionId)}
+                    />
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {questionId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {question.locales[0].question}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <ul className="list-none">
+                      {answers.map((answer, idx) => (
+                        <li
+                          key={idx}
+                          className={`${
+                            answer === question.locales[0].correct
+                              ? "font-bold text-green-600"
+                              : ""
+                          }`}
+                        >
+                          {String.fromCharCode(65 + idx)}. {answer}
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.difficulty}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.status}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.type.replace("_", " ")}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 flex items-center justify-center space-x-2">
+                    <button
+                      className="bg-orange-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => confirmQuestion(questionId)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => rejectQuestion(questionId)}
+                    >
+                      Reject
+                    </button>
+                    <Edit2
+                      size={22}
+                      className="text-gray-600 cursor-pointer hover:text-black"
+                      onClick={() =>
+                        navigate(`/edit-generated-question/${questionId}`)
+                      }
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {/* Пагинация */}
       <div className="flex space-x-4 mt-4">
         <button
           className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
@@ -249,8 +408,6 @@ const GeneratedQuestions = () => {
             }}
             className="px-4 py-2 bg-gray-300 rounded"
           >
-            {/* TODO: remove first option (1) before production */}
-            <option value="1">1</option>
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>

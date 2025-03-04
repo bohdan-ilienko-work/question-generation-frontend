@@ -1,3 +1,4 @@
+//src/components/QuestionGeneration/GeneratedQuestion.tsx
 import { Edit2 } from "lucide-react";
 import {
   useConfirmQuestionMutation,
