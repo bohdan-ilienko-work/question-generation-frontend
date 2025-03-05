@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Question } from "../types";
 import {
   useTranslateQuestionMutation,
@@ -14,42 +14,16 @@ const TranslatedQuestionItem = ({
   index: number;
 }) => {
   const navigate = useNavigate();
-  const [selectedLocale, setSelectedLocale] = useState(
-    question.locales[0]?.language || "en"
-  );
   const [translateQuestion] = useTranslateQuestionMutation();
   const [updateQuestion] = useUpdateQuestionMutation();
 
-  const [languages, setLanguages] = useState([
-    "ja",
-    "tr",
-    "cs",
-    "uk",
-    "ar",
-    "en",
-    "fr",
-    "es",
-    "de",
-    "it",
-  ]);
-  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
   const [questionLocales, setQuestionLocales] = useState([...question.locales]);
   const [loadingLanguage, setLoadingLanguage] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle"
   );
-
-  useEffect(() => {
-    setAvailableLanguages(questionLocales.map((locale) => locale.language));
-  }, [questionLocales]);
-
-  const handleLocaleChange = async (lang: string) => {
-    if (availableLanguages.includes(lang)) {
-      setSelectedLocale(lang);
-    } else {
-      await handleTranslate(lang);
-    }
-  };
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [editLocales, setEditLocales] = useState(false); // Флаг редактирования
 
   const handleTranslate = async (lang: string) => {
     try {
@@ -60,14 +34,10 @@ const TranslatedQuestionItem = ({
       }).unwrap();
 
       if (response.responseObject) {
-        const updatedLocales = [
-          ...questionLocales,
+        setQuestionLocales((prev) => [
+          ...prev,
           { ...response.responseObject, language: lang, isValid: false },
-        ];
-        setQuestionLocales(updatedLocales);
-        setAvailableLanguages((prev) => [...prev, lang]);
-        setLanguages((prev) => (prev.includes(lang) ? prev : [...prev, lang]));
-        setSelectedLocale(lang);
+        ]);
       }
     } catch (error) {
       console.error("Translation failed:", error);
@@ -78,34 +48,45 @@ const TranslatedQuestionItem = ({
 
   const handleRemoveLocale = (lang: string) => {
     if (lang === question.locales[0]?.language) {
-      alert("Cannot delete the original locale.");
+      alert("Cannot delete the base locale.");
       return;
     }
-    const updatedLocales = questionLocales.filter(
-      (locale) => locale.language !== lang
+    setQuestionLocales((prev) =>
+      prev.filter((locale) => locale.language !== lang)
     );
-    setQuestionLocales(updatedLocales);
-    setAvailableLanguages(updatedLocales.map((locale) => locale.language));
+  };
 
-    if (selectedLocale === lang) {
-      setSelectedLocale(question.locales[0]?.language || "en");
-    }
+  const handleEditChange = (
+    lang: string,
+    field: "question" | "correct" | "wrong",
+    value: string,
+    index?: number
+  ) => {
+    setQuestionLocales((prev) =>
+      prev.map((locale) =>
+        locale.language === lang
+          ? {
+              ...locale,
+              [field]:
+                field === "wrong" && index !== undefined
+                  ? locale.wrong.map((w, i) => (i === index ? value : w))
+                  : value,
+            }
+          : locale
+      )
+    );
   };
 
   const handleSave = async () => {
     try {
       setSaveStatus("saving");
-      const response = await updateQuestion({
+      await updateQuestion({
         ...question,
         id: question.id || question._id || "",
         locales: questionLocales,
       }).unwrap();
-
-      if (response) {
-        console.log("Question updated:", response);
-        setSaveStatus("saved");
-        setTimeout(() => setSaveStatus("idle"), 2000);
-      }
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
     } catch (error) {
       console.error("Failed to save question:", error);
       setSaveStatus("idle");
@@ -113,114 +94,176 @@ const TranslatedQuestionItem = ({
   };
 
   return (
-    <div className="flex items-center justify-between border p-4 rounded-lg shadow-md mb-4">
-      <div className="w-full">
-        <h3 className="text-lg font-semibold mb-2">
-          Question {index + 1}:{" "}
-          {
-            questionLocales.find((locale) => locale.language === selectedLocale)
-              ?.question
-          }{" "}
-          (
-          {
-            questionLocales.find((locale) => locale.language === selectedLocale)
-              ?.question.length
-          }{" "}
-          symbols)
-        </h3>
+    <div className="w-full border rounded-lg shadow-md p-4 mb-4 bg-white">
+      <h3 className="text-lg font-semibold mb-2">
+        Question {index + 1}: {questionLocales[0]?.question} (
+        {questionLocales[0]?.question.length} symbols)
+      </h3>
 
-        <div className="grid grid-cols-2 gap-4">
-          <span className="font-bold">
-            A){" "}
-            {
-              questionLocales.find(
-                (locale) => locale.language === selectedLocale
-              )?.correct
-            }{" "}
-            (
-            {
-              questionLocales.find(
-                (locale) => locale.language === selectedLocale
-              )?.correct.length
-            }{" "}
-            symbols)
-          </span>
-          {questionLocales
-            .find((locale) => locale.language === selectedLocale)
-            ?.wrong.map((option, idx) => (
-              <span key={idx} className="font-bold">
-                {String.fromCharCode(66 + idx)}) {option} ({option.length}{" "}
-                symbols)
-              </span>
-            ))}
-        </div>
-      </div>
+      {/* Таблица локалей */}
+      <table className="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border border-gray-300 px-4 py-2">Language</th>
+            <th className="border border-gray-300 px-4 py-2">Question</th>
+            <th className="border border-gray-300 px-4 py-2">Answers</th>
+            <th className="border border-gray-300 px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {questionLocales.map((locale, localeIndex) =>
+            localeIndex === 0 || isExpanded ? (
+              <tr
+                key={locale.language}
+                className={
+                  localeIndex === 0 ? "bg-gray-100" : "hover:bg-gray-50"
+                }
+              >
+                <td className="border border-gray-300 px-4 py-2 font-bold">
+                  {locale.language.toUpperCase()}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {editLocales ? (
+                    <input
+                      type="text"
+                      value={locale.question}
+                      onChange={(e) =>
+                        handleEditChange(
+                          locale.language,
+                          "question",
+                          e.target.value
+                        )
+                      }
+                      className="w-full border rounded px-2 py-1"
+                    />
+                  ) : (
+                    locale.question
+                  )}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <ul>
+                    <li className="text-green-600 font-bold">
+                      ✔{" "}
+                      {editLocales ? (
+                        <input
+                          type="text"
+                          value={locale.correct}
+                          onChange={(e) =>
+                            handleEditChange(
+                              locale.language,
+                              "correct",
+                              e.target.value
+                            )
+                          }
+                          className="w-full border rounded px-2 py-1"
+                        />
+                      ) : (
+                        locale.correct
+                      )}
+                      ({locale.correct.length} symbols)
+                    </li>
+                    {locale.wrong.map((option, idx) => (
+                      <li key={idx}>
+                        ✗{" "}
+                        {editLocales ? (
+                          <input
+                            type="text"
+                            value={option}
+                            onChange={(e) =>
+                              handleEditChange(
+                                locale.language,
+                                "wrong",
+                                e.target.value,
+                                idx
+                              )
+                            }
+                            className="w-full border rounded px-2 py-1"
+                          />
+                        ) : (
+                          option
+                        )}
+                        ({option.length} symbols)
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="border border-gray-300 px-4 py-2 flex flex-col space-y-2">
+                  {localeIndex !== 0 && (
+                    <button
+                      onClick={() => handleRemoveLocale(locale.language)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Remove
+                    </button>
+                  )}
+                  {localeIndex === 0 && (
+                    <>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/edit-question/${question.id || question._id}`
+                          )
+                        }
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
 
-      {/* Save button with status */}
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={handleSave}
-          className="px-4 py-3 text-lg bg-orange-500 text-white rounded hover:bg-orange-600 flex items-center gap-3"
-        >
-          <span>Save</span>
-          {saveStatus === "saving" ? (
-            <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-          ) : saveStatus === "saved" ? (
-            <span className="text-green-300">✅</span>
-          ) : (
-            <img
-              src="/save-item-1411-svgrepo-com.svg"
-              alt="Save"
-              className="w-4 h-4 me-4"
-            />
+                      <button
+                        onClick={handleSave}
+                        className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                      >
+                        {saveStatus === "saving"
+                          ? "Saving..."
+                          : saveStatus === "saved"
+                          ? "✔ Saved"
+                          : "Save"}
+                      </button>
+
+                      <button
+                        onClick={() => setEditLocales(!editLocales)}
+                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+                      >
+                        {editLocales ? "Done Editing" : "Edit Locales"}
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ) : null
           )}
-        </button>
+        </tbody>
+      </table>
 
+      {/* Кнопка для раскрытия локалей */}
+      {questionLocales.length > 1 && (
         <button
-          onClick={() =>
-            navigate(`/edit-question/${question.id || question._id}`)
-          }
-          className="px-4 py-3 text-lg bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center gap-3"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="mt-2 text-blue-500 hover:underline"
         >
-          Edit
-          <img
-            src="/edit-button-svgrepo-com.svg"
-            alt="Edit"
-            className="w-4 h-4 me-4"
-          />
+          {isExpanded ? "Hide Locales" : "Show Locales"}
         </button>
-      </div>
+      )}
 
-      {/* Language selector with close button in top-right */}
-      <div className="flex flex-wrap gap-2 mt-2 ms-5">
-        {languages.map((lang) => (
-          <div key={lang} className="relative">
+      {/* Кнопки перевода */}
+      <div className="mt-4 flex space-x-2 items-center">
+        <span className="text-gray-700 me-2">Question Locales:</span>
+        {["ja", "tr", "cs", "uk", "ar", "en", "fr", "es", "de", "it"].map(
+          (lang) => (
             <button
-              onClick={() => handleLocaleChange(lang)}
+              key={lang}
+              onClick={() => handleTranslate(lang)}
               disabled={loadingLanguage === lang}
-              className={`relative px-3 py-1 border rounded flex items-center hover:bg-gray-200 ${
-                selectedLocale === lang
-                  ? "bg-blue-500 text-white"
-                  : availableLanguages.includes(lang)
+              className={`px-2 py-1 border rounded ${
+                questionLocales.some((locale) => locale.language === lang)
                   ? "bg-gray-400 text-black"
-                  : "bg-white text-black"
+                  : "bg-white text-black hover:bg-gray-200"
               }`}
             >
               {loadingLanguage === lang ? "..." : lang.toUpperCase()}
             </button>
-
-            {/* Кнопка удаления (❌) в правом верхнем углу (теперь белая) */}
-            {availableLanguages.includes(lang) &&
-              lang !== question.locales[0]?.language && (
-                <button
-                  onClick={() => handleRemoveLocale(lang)}
-                  className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-xs rounded-full hover:bg-red-700"
-                >
-                  ✖
-                </button>
-              )}
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );
