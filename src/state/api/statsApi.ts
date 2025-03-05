@@ -20,11 +20,20 @@ export const statsApi = createApi({
           totalRequests: number;
         };
       },
-      { page: number; limit: number }
+      {
+        page: number;
+        limit: number;
+        sourceLanguage?: string;
+        targetLanguage?: string;
+        startDate?: string;
+        endDate?: string;
+        minCharacters?: number;
+        maxCharacters?: number;
+      }
     >({
-      query: ({ page, limit }) => ({
+      query: ({ page, limit, ...filters }) => ({
         url: "/stats/deepl/logs",
-        params: { page, limit },
+        params: { page, limit, ...filters },
       }),
       providesTags: (_result, _error, { page, limit }) => [
         { type: "DeeplLogStats", page, limit },

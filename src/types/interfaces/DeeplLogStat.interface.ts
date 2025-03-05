@@ -4,6 +4,7 @@ export interface DeeplLogStat {
   sourceLanguage: string;
   targetLanguage: string;
   requestText: string;
+  translatedText: string;
   createdAt: string;
   updatedAt: string;
 }

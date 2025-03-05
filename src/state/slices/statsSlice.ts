@@ -9,6 +9,8 @@ interface StatsFilters {
     totalPages: number;
     startDate?: string;
     endDate?: string;
+    minCharacters?: number;
+    maxCharacters?: number;
     sourceLanguage?: string;
     targetLanguage?: string;
   };
@@ -57,6 +59,12 @@ export const statsSlice = createSlice({
     setDeeplLogsTargetLanguage: (state, action: PayloadAction<string>) => {
       state.deeplLogs.targetLanguage = action.payload;
     },
+    setDeeplLogsMinCharacters: (state, action: PayloadAction<number>) => {
+      state.deeplLogs.minCharacters = action.payload;
+    },
+    setDeeplLogsMaxCharacters: (state, action: PayloadAction<number>) => {
+      state.deeplLogs.maxCharacters = action.payload;
+    },
     setOpenAiLogsLimit: (state, action: PayloadAction<number>) => {
       state.openAiLogs.limit = action.payload;
     },
@@ -77,6 +85,8 @@ export const {
   setDeeplLogsEndDate,
   setDeeplLogsSourceLanguage,
   setDeeplLogsTargetLanguage,
+  setDeeplLogsMinCharacters,
+  setDeeplLogsMaxCharacters,
   setOpenAiLogsLimit,
   setOpenAiLogsPage,
   setOpenAiLogsTotalPages,
