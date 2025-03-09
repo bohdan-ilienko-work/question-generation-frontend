@@ -32,7 +32,7 @@ const QuestionGeneration: React.FC = () => {
         difficulty: +state.difficulty,
         // max_tokens: state.max_tokens,
         count: state.count,
-        category: state.category,
+        category: state.category?._id,
         temperature: state.temperature,
         type: state.type,
         model: state.model,

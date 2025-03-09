@@ -3,7 +3,7 @@ import { QuestionType } from "../../../types/enums/QuestionType.enum";
 import { GenerateQuestionSettings, Action } from "./types";
 
 export const initialState: GenerateQuestionSettings = {
-  category: "Art",
+  category: null,
   prompt: "",
   // max_tokens: 140,
   count: 5,
@@ -13,7 +13,7 @@ export const initialState: GenerateQuestionSettings = {
   difficulty: 3,
   type: QuestionType.OneChoice,
   model: "gpt-4o",
-  requiredLanguages: ["en"],
+  requiredLanguages: ["en", "es", "fr", "de", "uk", "zh"],
   error: null,
   isGenerated: false,
 };

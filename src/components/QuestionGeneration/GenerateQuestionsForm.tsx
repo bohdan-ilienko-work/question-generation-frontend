@@ -1,9 +1,19 @@
 import React from "react";
 import InputField from "./InputField";
+import {
+  useCategoriesFilters,
+  useGetCategoriesQuery,
+  setCategoriesLimit,
+  setCategoriesTitle,
+  setCategoriesPage,
+} from "../../state";
+import { useDispatch } from "react-redux";
+import CategoryDropdown from "../CategoryDropdown";
+import { Category } from "../../types";
 
 interface GenerateQuestionsFormProps {
   state: {
-    category: string;
+    category: Category | null;
     // max_tokens: number;
     count: number;
     temperature: number;
@@ -33,7 +43,7 @@ interface GenerateQuestionsFormProps {
       | "type"
       | "model"
       | "requiredLanguages";
-    value: string | number | string[];
+    value: string | number | string[] | Category;
   }>;
 }
 
@@ -41,7 +51,19 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
   state,
   dispatch,
 }) => {
-  const handleInputChange = (name: string, value: string | number) => {
+  const { page, limit, title, totalPages } = useCategoriesFilters();
+
+  const reduxDispatch = useDispatch();
+
+  const { data: categories } = useGetCategoriesQuery(
+    { page, limit, title },
+    { refetchOnMountOrArgChange: true }
+  );
+
+  const handleInputChange = (
+    name: string,
+    value: string | number | Category
+  ) => {
     dispatch({
       type: "SET_VALUE",
       field: name as "category" | "count",
@@ -66,14 +88,29 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <InputField
-        label="Category"
-        name="category"
-        type="select"
-        value={state.category}
-        selectOptions={["Art", "Science", "History"]}
-        onChange={handleInputChange}
-      />
+      <div>
+        <label className="font-semibold">Category</label>
+
+        <CategoryDropdown
+          categories={categories?.responseObject.categories || []}
+          selectedCategory={state.category}
+          setSelectedCategory={(category) =>
+            handleInputChange("category", category)
+          }
+          handleLimitChange={(limit) =>
+            reduxDispatch(setCategoriesLimit(limit))
+          }
+          handlePageChange={(page) => reduxDispatch(setCategoriesPage(page))}
+          handleTitleChange={(title) =>
+            reduxDispatch(setCategoriesTitle(title))
+          }
+          page={page}
+          limit={limit}
+          totalPages={totalPages}
+          title={title}
+        />
+      </div>
+
       {/* <InputField
         label="Max Tokens"
         name="max_tokens"
@@ -81,6 +118,7 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
         value={state.max_tokens}
         onChange={handleInputChange}
       /> */}
+
       <InputField
         label="Count"
         name="count"

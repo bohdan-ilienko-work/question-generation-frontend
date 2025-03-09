@@ -2,6 +2,7 @@
 
 import { GptModel } from "../../../types/types/GptModel.type";
 import { QuestionType } from "../../../types/enums/QuestionType.enum";
+import { Category } from "../../../types";
 
 export interface Question {
   _id?: string;
@@ -12,7 +13,7 @@ export interface Question {
 }
 
 export interface GenerateQuestionSettings {
-  category: string;
+  category: Category | null;
   prompt: string;
   // max_tokens: number;
   count: number;
