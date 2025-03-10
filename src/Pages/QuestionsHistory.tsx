@@ -9,14 +9,18 @@ import {
   setHistoryQuestionsType,
   useSelectHistoryQuestionsFilters,
 } from "../state";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Question } from "../types";
-import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
+// import GeneratedQuestionList from "../components/QuestionGeneration/QuestionList";
 import { QuestionType } from "../types/enums/QuestionType.enum";
 import { QuestionStatus } from "../types/types/QuestionStatus.type";
 import Loader from "../components/Loader";
+import { Edit2 } from "lucide-react";
+import MapWithMarker from "../components/MapWithMarker";
+import { useNavigate } from "react-router-dom";
 
 const QuestionsHistory = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { limit, page, totalPages, difficulty, type, title, status } =
@@ -30,6 +34,22 @@ const QuestionsHistory = () => {
     title,
     status,
   });
+
+  const [selectedQuestions, setSelectedQuestions] = useState<Set<string>>(
+    new Set()
+  );
+
+  const toggleSelection = (id: string) => {
+    setSelectedQuestions((prev) => {
+      const newSelection = new Set(prev);
+      if (newSelection.has(id)) {
+        newSelection.delete(id);
+      } else {
+        newSelection.add(id);
+      }
+      return newSelection;
+    });
+  };
 
   const isFirstRender = useRef(true);
 
@@ -123,12 +143,136 @@ const QuestionsHistory = () => {
         </div>
       </div>
 
-      {/* Question list */}
-      <GeneratedQuestionList
-        editPath="/edit-question"
-        questions={data?.responseObject.questions as Question[]}
-      />
+      {selectedQuestions.size > 0 && (
+        <div className="flex space-x-4 mb-4">
+          <button
+            className="bg-green-500 text-white px-3 py-1 rounded-md"
+            // onClick={handleBulkConfirm}
+          >
+            Accept Selected
+          </button>
+          <button
+            className="bg-red-500 text-white px-3 py-1 rounded-md"
+            // onClick={handleBulkReject}
+          >
+            Reject Selected
+          </button>
+        </div>
+      )}
+      {/* Таблица */}
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse border border-gray-300 bg-white shadow-md rounded-lg">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 px-4 py-2">
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedQuestions(
+                        new Set(
+                          data?.responseObject.questions.map(
+                            (q: Question) => q.id
+                          )
+                        )
+                      );
+                    } else {
+                      setSelectedQuestions(new Set());
+                    }
+                  }}
+                  checked={
+                    selectedQuestions.size ===
+                    data?.responseObject.questions.length
+                  }
+                />
+              </th>
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Question
+              </th>
+              <th className="border border-gray-300 px-4 py-2">Answers</th>
+              <th className="border border-gray-300 px-4 py-2">Difficulty</th>
+              <th className="border border-gray-300 px-4 py-2">Status</th>
+              <th className="border border-gray-300 px-4 py-2">Type</th>
+              <th className="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.responseObject.questions.map((question: Question) => {
+              const questionId =
+                question.id || question._id || Math.random().toString(36);
 
+              return (
+                <tr key={questionId} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedQuestions.has(questionId)}
+                      onChange={() => toggleSelection(questionId)}
+                    />
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {questionId}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {question.locales[0].question}
+                  </td>
+
+                  {/* Conditional rendering for map or text answers */}
+                  <td className="border border-gray-300 px-4 py-2 w-1/4">
+                    {question.type === "map" ? (
+                      <MapWithMarker
+                        position={[
+                          Number(question.locales[0].correct[0]),
+                          Number(question.locales[0].correct[1]),
+                        ]}
+                      />
+                    ) : (
+                      <ul className="list-none grid grid-cols-2 gap-4">
+                        <li className="font-bold text-green-600">
+                          ✔ {question.locales[0].correct}
+                        </li>
+                        {question.locales[0].wrong?.map((answer, idx) => (
+                          <li key={idx}>✗ {answer}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </td>
+
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.difficulty}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.status}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {question.type.replace("_", " ")}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 flex items-center justify-center space-x-2">
+                    {/* <button
+                      className="bg-orange-500 text-white px-3 py-1 rounded-md"
+                      // onClick={() => confirmQuestion(questionId)}
+                    >
+                      Accept
+                    </button> */}
+                    {/* <button
+                      className="bg-red-500 text-white px-3 py-1 rounded-md"
+                      // onClick={() => rejectQuestion(questionId)}
+                    >
+                      Reject
+                    </button> */}
+                    <Edit2
+                      size={22}
+                      className="text-gray-600 cursor-pointer hover:text-black"
+                      onClick={() => navigate(`/edit-question/${questionId}`)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       {/* Pagination */}
       <div className="flex space-x-4 mt-4">
         <button

@@ -16,6 +16,7 @@ import {
 } from "../state/api/questionsApi";
 import { useNavigate } from "react-router-dom";
 import MapWithMarker from "../components/MapWithMarker";
+import Loader from "../components/Loader";
 
 const GeneratedQuestions = () => {
   const dispatch = useDispatch();
@@ -78,16 +79,7 @@ const GeneratedQuestions = () => {
     setSelectedQuestions(new Set());
   };
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="flex space-x-2">
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-          <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-        </div>
-      </div>
-    );
+  if (isLoading) return <Loader />;
 
   if (error) {
     return (
