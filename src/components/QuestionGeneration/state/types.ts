@@ -32,7 +32,7 @@ export type Action =
   | {
       type: "SET_VALUE";
       field: keyof GenerateQuestionSettings;
-      value: string | number | string[];
+      value: string | number | string[] | Category;
     }
   | { type: "SET_QUESTIONS"; questions: Question[] }
   | { type: "SET_TOKENS_USED"; tokensUsed: number }

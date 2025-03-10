@@ -129,7 +129,7 @@ const EditQuestion = () => {
               render={({ field }) => (
                 <select {...field} className="w-full p-2 border rounded-md">
                   <option value="one_choice">One Choice</option>
-                  <option value="multiple_choice">Multiple Choice</option>
+                  <option value="map">Map</option>
                 </select>
               )}
             />
@@ -162,6 +162,7 @@ const EditQuestion = () => {
                   render={({ field }) => (
                     <input
                       {...field}
+                      value={typeof field.value === "string" ? field.value : ""}
                       className="w-full p-2 border rounded-md"
                     />
                   )}
@@ -176,6 +177,7 @@ const EditQuestion = () => {
                   render={({ field }) => (
                     <input
                       {...field}
+                      value={typeof field.value === "string" ? field.value : ""}
                       className="w-full p-2 border rounded-md"
                     />
                   )}

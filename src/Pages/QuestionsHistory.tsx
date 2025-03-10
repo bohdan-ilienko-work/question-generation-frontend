@@ -85,7 +85,7 @@ const QuestionsHistory = () => {
             className="w-full p-2 border rounded-md"
           >
             <option value="">All</option>
-            <option value="multiple_choice">Multiple Choice</option>
+            <option value="map">Map</option>
             <option value="one_choice">One Choice</option>
           </select>
         </div>

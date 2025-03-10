@@ -15,6 +15,7 @@ import {
   useRejectQuestionsMutation,
 } from "../state/api/questionsApi";
 import { useNavigate } from "react-router-dom";
+import MapWithMarker from "../components/MapWithMarker";
 
 const GeneratedQuestions = () => {
   const dispatch = useDispatch();
@@ -304,11 +305,6 @@ const GeneratedQuestions = () => {
               const questionId =
                 question.id || question._id || Math.random().toString(36);
 
-              const answers = [
-                question.locales[0].correct,
-                ...(question.locales[0].wrong || []),
-              ];
-
               return (
                 <tr key={questionId} className="hover:bg-gray-100">
                   <td className="border border-gray-300 px-4 py-2 text-center">
@@ -324,22 +320,28 @@ const GeneratedQuestions = () => {
                   <td className="border border-gray-300 px-4 py-2">
                     {question.locales[0].question}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <ul className="list-none">
-                      {answers.map((answer, idx) => (
-                        <li
-                          key={idx}
-                          className={`${
-                            answer === question.locales[0].correct
-                              ? "font-bold text-green-600"
-                              : ""
-                          }`}
-                        >
-                          {String.fromCharCode(65 + idx)}. {answer}
+
+                  {/* Conditional rendering for map or text answers */}
+                  <td className="border border-gray-300 px-4 py-2 w-1/4">
+                    {question.type === "map" ? (
+                      <MapWithMarker
+                        position={[
+                          Number(question.locales[0].correct[0]),
+                          Number(question.locales[0].correct[1]),
+                        ]}
+                      />
+                    ) : (
+                      <ul className="list-none grid grid-cols-2 gap-4">
+                        <li className="font-bold text-green-600">
+                          ✔ {question.locales[0].correct}
                         </li>
-                      ))}
-                    </ul>
+                        {question.locales[0].wrong?.map((answer, idx) => (
+                          <li key={idx}>✗ {answer}</li>
+                        ))}
+                      </ul>
+                    )}
                   </td>
+
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     {question.difficulty}
                   </td>

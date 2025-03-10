@@ -147,7 +147,11 @@ const TranslatedQuestionItem = ({
                       {editLocales ? (
                         <input
                           type="text"
-                          value={locale.correct}
+                          value={
+                            typeof locale.correct === "string"
+                              ? locale.correct
+                              : locale.correct.join(", ")
+                          }
                           onChange={(e) =>
                             handleEditChange(
                               locale.language,
@@ -248,22 +252,20 @@ const TranslatedQuestionItem = ({
       {/* Кнопки перевода */}
       <div className="mt-4 flex space-x-2 items-center">
         <span className="text-gray-700 me-2">Question Locales:</span>
-        {["ja", "tr", "cs", "uk", "ar", "en", "fr", "es", "de", "it"].map(
-          (lang) => (
-            <button
-              key={lang}
-              onClick={() => handleTranslate(lang)}
-              disabled={loadingLanguage === lang}
-              className={`px-2 py-1 border rounded ${
-                questionLocales.some((locale) => locale.language === lang)
-                  ? "bg-gray-400 text-black"
-                  : "bg-white text-black hover:bg-gray-200"
-              }`}
-            >
-              {loadingLanguage === lang ? "..." : lang.toUpperCase()}
-            </button>
-          )
-        )}
+        {["ru", "uk", "en", "es", "fr", "de", "it", "pl", "tr"].map((lang) => (
+          <button
+            key={lang}
+            onClick={() => handleTranslate(lang)}
+            disabled={loadingLanguage === lang}
+            className={`px-2 py-1 border rounded ${
+              questionLocales.some((locale) => locale.language === lang)
+                ? "bg-gray-400 text-black"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
+          >
+            {loadingLanguage === lang ? "..." : lang.toUpperCase()}
+          </button>
+        ))}
       </div>
     </div>
   );

@@ -141,7 +141,7 @@ const EditGeneratedQuestion = () => {
             control={control}
             options={[
               { value: "one_choice", label: "One Choice" },
-              { value: "multiple_choice", label: "Multiple Choice" },
+              { value: "map", label: "Map" },
             ]}
           />
           <EditQuestionFormInput
