@@ -157,7 +157,7 @@ export const questionsApi = createApi({
         url: `/questions/history/${id}/confirm`,
         method: "POST",
       }),
-      invalidatesTags: ["Questions", "GeneratedQuestions"],
+      invalidatesTags: ["Questions"],
     }),
 
     rejectQuestion: builder.mutation<Question, string>({
@@ -165,7 +165,7 @@ export const questionsApi = createApi({
         url: `/questions/history/${id}/reject`,
         method: "DELETE",
       }),
-      invalidatesTags: ["GeneratedQuestions"],
+      invalidatesTags: ["Questions"],
     }),
 
     // 🔹 this endpoint for confirming many questions
@@ -175,7 +175,7 @@ export const questionsApi = createApi({
         method: "POST",
         body: { ids },
       }),
-      invalidatesTags: ["Questions", "GeneratedQuestions"],
+      invalidatesTags: ["Questions"],
     }),
 
     rejectQuestions: builder.mutation<Question[], string[]>({
@@ -184,7 +184,7 @@ export const questionsApi = createApi({
         method: "DELETE",
         body: { ids },
       }),
-      invalidatesTags: ["GeneratedQuestions"],
+      invalidatesTags: ["Questions"],
     }),
 
     confirmGeneratedQuestion: builder.mutation<Question, string>({
