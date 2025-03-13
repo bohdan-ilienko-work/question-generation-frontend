@@ -9,10 +9,10 @@ import {
 } from "../state";
 import { Edit2 } from "lucide-react";
 import {
-  useConfirmQuestionMutation,
-  useRejectQuestionMutation,
-  useConfirmQuestionsMutation,
-  useRejectQuestionsMutation,
+  useConfirmGeneratedQuestionMutation,
+  useRejectGeneratedQuestionMutation,
+  useConfirmGeneratedQuestionsMutation,
+  useRejectGeneratedQuestionsMutation,
 } from "../state/api/questionsApi";
 import { useNavigate } from "react-router-dom";
 import MapWithMarker from "../components/MapWithMarker";
@@ -51,11 +51,11 @@ const GeneratedQuestions = () => {
     isFirstRender.current = false;
   }, [limit, page]);
 
-  const [confirmQuestion] = useConfirmQuestionMutation();
-  const [rejectQuestion] = useRejectQuestionMutation();
+  const [confirmQuestion] = useConfirmGeneratedQuestionMutation();
+  const [rejectQuestion] = useRejectGeneratedQuestionMutation();
 
-  const [confirmQuestions] = useConfirmQuestionsMutation();
-  const [rejectQuestions] = useRejectQuestionsMutation();
+  const [confirmQuestions] = useConfirmGeneratedQuestionsMutation();
+  const [rejectQuestions] = useRejectGeneratedQuestionsMutation();
 
   const toggleSelection = (id: string) => {
     setSelectedQuestions((prev) => {

@@ -35,14 +35,14 @@ export const questionsApi = createApi({
       string
     >({
       query: (id) => ({
-        url: `/questions/${id}`,
+        url: `/questions/history/${id}`,
       }),
       providesTags: (_result, _error, id) => [{ type: "Questions", id }],
     }),
 
     updateQuestion: builder.mutation<Question, Question>({
       query: (body) => ({
-        url: `/questions/${body.id}`,
+        url: `/questions/history/${body.id}`,
         method: "PUT",
         body,
       }),
@@ -89,7 +89,7 @@ export const questionsApi = createApi({
       { questionId: string; language: string }
     >({
       query: ({ questionId, language }) => ({
-        url: `/questions/translate/${questionId}`,
+        url: `/questions/history/translate/${questionId}`,
         method: "POST",
         body: { language },
       }),
@@ -134,12 +134,8 @@ export const questionsApi = createApi({
         type?: QuestionType;
       }
     >({
-      // query: ({ limit, page }) => ({
-      //   url: "/questions",
-      //   params: { limit, page },
-      // }),
       query: ({ limit, page, ...filters }) => ({
-        url: "/questions",
+        url: "/questions/history",
         params: { limit, page, ...filters },
       }),
       providesTags: ["Questions"],
@@ -158,7 +154,7 @@ export const questionsApi = createApi({
 
     confirmQuestion: builder.mutation<Question, string>({
       query: (id) => ({
-        url: `/questions/${id}/confirm`,
+        url: `/questions/history/${id}/confirm`,
         method: "POST",
       }),
       invalidatesTags: ["Questions", "GeneratedQuestions"],
@@ -166,7 +162,7 @@ export const questionsApi = createApi({
 
     rejectQuestion: builder.mutation<Question, string>({
       query: (id) => ({
-        url: `/questions/${id}/reject`,
+        url: `/questions/history/${id}/reject`,
         method: "DELETE",
       }),
       invalidatesTags: ["GeneratedQuestions"],
@@ -175,7 +171,7 @@ export const questionsApi = createApi({
     // 🔹 this endpoint for confirming many questions
     confirmQuestions: builder.mutation<Question[], string[]>({
       query: (ids) => ({
-        url: `/questions/confirm`,
+        url: `/questions/history/confirm`,
         method: "POST",
         body: { ids },
       }),
@@ -184,7 +180,40 @@ export const questionsApi = createApi({
 
     rejectQuestions: builder.mutation<Question[], string[]>({
       query: (ids) => ({
-        url: `/questions/reject`,
+        url: `/questions/history/reject`,
+        method: "DELETE",
+        body: { ids },
+      }),
+      invalidatesTags: ["GeneratedQuestions"],
+    }),
+
+    confirmGeneratedQuestion: builder.mutation<Question, string>({
+      query: (id) => ({
+        url: `/questions/generated/${id}/confirm`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Questions", "GeneratedQuestions"],
+    }),
+
+    rejectGeneratedQuestion: builder.mutation<Question, string>({
+      query: (id) => ({
+        url: `/questions/generated/${id}/reject`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["GeneratedQuestions"],
+    }),
+    confirmGeneratedQuestions: builder.mutation<Question[], string[]>({
+      query: (ids) => ({
+        url: `/questions/generated/confirm`,
+        method: "POST",
+        body: { ids },
+      }),
+      invalidatesTags: ["Questions", "GeneratedQuestions"],
+    }),
+
+    rejectGeneratedQuestions: builder.mutation<Question[], string[]>({
+      query: (ids) => ({
+        url: `/questions/generated/reject`,
         method: "DELETE",
         body: { ids },
       }),
@@ -248,6 +277,10 @@ export const {
   useRejectQuestionMutation,
   useConfirmQuestionsMutation,
   useRejectQuestionsMutation,
+  useConfirmGeneratedQuestionMutation,
+  useRejectGeneratedQuestionMutation,
+  useConfirmGeneratedQuestionsMutation,
+  useRejectGeneratedQuestionsMutation,
   useGetOneQuestionQuery,
   useUpdateQuestionMutation,
   useTranslateQuestionMutation,

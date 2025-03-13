@@ -1,5 +1,11 @@
 import { useDispatch } from "react-redux";
-import { useGetQuestionsHistoryQuery } from "../state/api/questionsApi";
+import {
+  useConfirmQuestionMutation,
+  useConfirmQuestionsMutation,
+  useGetQuestionsHistoryQuery,
+  useRejectQuestionMutation,
+  useRejectQuestionsMutation,
+} from "../state/api/questionsApi";
 import {
   setHistoryQuestionsDifficulty,
   setHistoryQuestionsLimit,
@@ -22,6 +28,12 @@ import { useNavigate } from "react-router-dom";
 const QuestionsHistory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [confirmQuestions] = useConfirmQuestionsMutation();
+  const [confirmQuestion] = useConfirmQuestionMutation();
+
+  const [rejectQuestions] = useRejectQuestionsMutation();
+  const [rejectQuestion] = useRejectQuestionMutation();
 
   const { limit, page, totalPages, difficulty, type, title, status } =
     useSelectHistoryQuestionsFilters();
@@ -59,6 +71,16 @@ const QuestionsHistory = () => {
     }
     isFirstRender.current = false;
   }, [limit, page, difficulty, type, title, refetch]);
+
+  const handleBulkConfirm = () => {
+    confirmQuestions(Array.from(selectedQuestions));
+    setSelectedQuestions(new Set());
+  };
+
+  const handleBulkReject = () => {
+    rejectQuestions(Array.from(selectedQuestions));
+    setSelectedQuestions(new Set());
+  };
 
   if (isLoading) return <Loader />;
 
@@ -147,13 +169,13 @@ const QuestionsHistory = () => {
         <div className="flex space-x-4 mb-4">
           <button
             className="bg-green-500 text-white px-3 py-1 rounded-md"
-            // onClick={handleBulkConfirm}
+            onClick={handleBulkConfirm}
           >
             Accept Selected
           </button>
           <button
             className="bg-red-500 text-white px-3 py-1 rounded-md"
-            // onClick={handleBulkReject}
+            onClick={handleBulkReject}
           >
             Reject Selected
           </button>
@@ -249,18 +271,18 @@ const QuestionsHistory = () => {
                     {question.type.replace("_", " ")}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 flex items-center justify-center space-x-2">
-                    {/* <button
+                    <button
                       className="bg-orange-500 text-white px-3 py-1 rounded-md"
-                      // onClick={() => confirmQuestion(questionId)}
+                      onClick={() => confirmQuestion(questionId)}
                     >
                       Accept
-                    </button> */}
-                    {/* <button
+                    </button>
+                    <button
                       className="bg-red-500 text-white px-3 py-1 rounded-md"
-                      // onClick={() => rejectQuestion(questionId)}
+                      onClick={() => rejectQuestion(questionId)}
                     >
                       Reject
-                    </button> */}
+                    </button>
                     <Edit2
                       size={22}
                       className="text-gray-600 cursor-pointer hover:text-black"
