@@ -3,6 +3,8 @@ import { Question } from "../types";
 import {
   useTranslateQuestionMutation,
   useUpdateQuestionMutation,
+  useConfirmQuestionMutation,
+  useRejectQuestionMutation,
 } from "../state";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +18,11 @@ const TranslatedQuestionItem = ({
   const navigate = useNavigate();
   const [translateQuestion] = useTranslateQuestionMutation();
   const [updateQuestion] = useUpdateQuestionMutation();
+
+  const [confirmQuestion, { isLoading: isConfirming }] =
+    useConfirmQuestionMutation();
+  const [rejectQuestion, { isLoading: isRejecting }] =
+    useRejectQuestionMutation();
 
   const [questionLocales, setQuestionLocales] = useState([...question.locales]);
   const [loadingLanguage, setLoadingLanguage] = useState<string | null>(null);
@@ -202,6 +209,22 @@ const TranslatedQuestionItem = ({
                   )}
                   {localeIndex === 0 && (
                     <>
+                      <button
+                        onClick={() => confirmQuestion(question._id!)}
+                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        disabled={isConfirming}
+                      >
+                        {isConfirming ? "Confirming..." : "Confirm"}
+                      </button>
+
+                      <button
+                        onClick={() => rejectQuestion(question._id!)}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                        disabled={isRejecting}
+                      >
+                        {isRejecting ? "Rejecting..." : "Reject"}
+                      </button>
+
                       <button
                         onClick={() =>
                           navigate(
