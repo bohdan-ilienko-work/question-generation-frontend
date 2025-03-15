@@ -127,7 +127,7 @@ const TranslatedQuestions = () => {
           data.responseObject.questions.map(
             (question: Question, index: number) => (
               <TranslatedQuestionItem
-                key={question.id || question._id || index}
+                key={question._id}
                 question={question}
                 index={limit * (page - 1) + index}
               />

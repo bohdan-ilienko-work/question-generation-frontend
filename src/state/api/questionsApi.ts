@@ -4,7 +4,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./authApi";
 import { QuestionType } from "../../types/enums/QuestionType.enum";
 import { GptModel } from "../../types/types/GptModel.type";
-import { Question } from "../../types";
+import { ILocaleSchema, Question } from "../../types";
 import {
   setGeneratedQuestionsTotalPages,
   setHistoryQuestionsTotalPages,
@@ -265,6 +265,52 @@ export const questionsApi = createApi({
       }),
       invalidatesTags: ["Questions"],
     }),
+
+    validateQuestionTranslation: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          isValid: boolean;
+          suggestions: Partial<ILocaleSchema>[] | null;
+          totalTokensUsed: number;
+          completionTokensUsed: number;
+        };
+      },
+      {
+        questionId: string;
+        originalLanguage: string;
+        targetLanguage: string;
+      }
+    >({
+      query: ({ questionId, originalLanguage, targetLanguage }) => ({
+        url: `/questions/history/validate-translation/${questionId}`,
+        method: "POST",
+        body: { originalLanguage, targetLanguage },
+      }),
+    }),
+
+    validateGeneratedQuestionTranslation: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          isValid: boolean;
+          suggestions: Partial<ILocaleSchema>[] | null;
+          totalTokensUsed: number;
+          completionTokensUsed: number;
+        };
+      },
+      {
+        questionId: string;
+        originalLanguage: string;
+        targetLanguage: string;
+      }
+    >({
+      query: ({ questionId, originalLanguage, targetLanguage }) => ({
+        url: `/questions/generated/validate-translation/${questionId}`,
+        method: "POST",
+        body: { originalLanguage, targetLanguage },
+      }),
+    }),
   }),
 });
 
@@ -287,4 +333,6 @@ export const {
   useGetOneGeneratedQuestionQuery,
   useUpdateGeneratedQuestionMutation,
   useTranslateGeneratedQuestionMutation,
+  useValidateQuestionTranslationMutation,
+  useValidateGeneratedQuestionTranslationMutation,
 } = questionsApi;
