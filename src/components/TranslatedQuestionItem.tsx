@@ -223,7 +223,7 @@ const TranslatedQuestionItem = ({
                   <td className="border border-gray-300 px-4 py-2">
                     <ul>
                       <li className="text-green-600 font-bold">
-                        ✔{" "}
+                        ✔
                         {editLocales ? (
                           <input
                             type="text"
@@ -244,7 +244,8 @@ const TranslatedQuestionItem = ({
                         ) : (
                           locale.correct
                         )}
-                        ({locale.correct.length} symbols)
+                        {typeof locale.correct === "string" &&
+                          `(${locale.correct.length} symbols)`}
                       </li>
                       {locale.wrong?.map((option, idx) => (
                         <li key={idx}>
