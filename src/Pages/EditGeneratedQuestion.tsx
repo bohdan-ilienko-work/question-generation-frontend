@@ -140,7 +140,7 @@ const EditGeneratedQuestion = () => {
             name="type"
             control={control}
             options={[
-              { value: "one_choice", label: "One Choice" },
+              { value: "choice", label: "One Choice" },
               { value: "map", label: "Map" },
             ]}
           />

@@ -1,4 +1,4 @@
 export enum QuestionType {
-  OneChoice = "one_choice",
+  OneChoice = "choice",
   Map = "map",
 }

@@ -128,7 +128,7 @@ const QuestionsHistory = () => {
           >
             <option value="">All</option>
             <option value="map">Map</option>
-            <option value="one_choice">One Choice</option>
+            <option value="choice">One Choice</option>
           </select>
         </div>
 

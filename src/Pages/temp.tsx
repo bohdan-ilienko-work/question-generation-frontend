@@ -128,7 +128,7 @@ const EditQuestion = () => {
               control={control}
               render={({ field }) => (
                 <select {...field} className="w-full p-2 border rounded-md">
-                  <option value="one_choice">One Choice</option>
+                  <option value="choice">One Choice</option>
                   <option value="map">Map</option>
                 </select>
               )}

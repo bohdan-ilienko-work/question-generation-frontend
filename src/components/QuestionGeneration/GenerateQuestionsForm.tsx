@@ -18,7 +18,7 @@ interface GenerateQuestionsFormProps {
     count: number;
     temperature: number;
     difficulty: 1 | 2 | 3 | 4 | 5;
-    type: "map" | "one_choice";
+    type: "map" | "choice";
     model:
       | "gpt-3.5-turbo"
       | "gpt-4-turbo"
@@ -153,7 +153,7 @@ const GenerateQuestionsForm: React.FC<GenerateQuestionsFormProps> = ({
         name="type"
         type="select"
         value={state.type}
-        selectOptions={["one_choice", "map"]}
+        selectOptions={["choice", "map"]}
         onChange={handleInputChange}
       />
 
