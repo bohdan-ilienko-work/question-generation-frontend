@@ -46,6 +46,11 @@ export default function DashboardWrapper() {
         <h1 className="text-2xl font-bold text-center mb-6">Dashboard</h1>
         <nav className="flex flex-col space-y-2">
           <SidebarLink
+            to="/parse-questions"
+            label="Parse Questions"
+            icon="/read-era-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/generate-question"
             label="Generate Questions"
             icon="/openai-svgrepo-com.svg"

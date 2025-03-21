@@ -6,9 +6,6 @@ import {
 import RequireAuth from "./components/RequireAuth";
 import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
-import EditGeneratedQuestion from "./Pages/EditGeneratedQuestion";
-import DeeplLogs from "./Pages/DeeplLogs";
-import TranslatedQuestions from "./Pages/TranslatedQuestions";
 
 // Динамическая загрузка страницw
 const Login = lazy(() => import("./Pages/Login"));
@@ -17,6 +14,12 @@ const GeneratedQuestions = lazy(() => import("./Pages/GeneratedQuestions"));
 const QuestionsHistory = lazy(() => import("./Pages/QuestionsHistory"));
 const EditQuestion = lazy(() => import("./Pages/EditQuestion")); // Страница редактирования
 const Settings = lazy(() => import("./Pages/Settings"));
+const EditGeneratedQuestion = lazy(
+  () => import("./Pages/EditGeneratedQuestion")
+);
+const DeeplLogs = lazy(() => import("./Pages/DeeplLogs"));
+const ParseQuestions = lazy(() => import("./Pages/ParseQuestions"));
+const TranslatedQuestions = lazy(() => import("./Pages/TranslatedQuestions"));
 
 const router = createBrowserRouter([
   {
@@ -36,7 +39,15 @@ const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <Navigate to="generate-question" replace /> },
+      { index: true, element: <Navigate to="parse-questions" replace /> },
+      {
+        path: "parse-questions",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <ParseQuestions />
+          </Suspense>
+        ),
+      },
       {
         path: "generate-question",
         element: (

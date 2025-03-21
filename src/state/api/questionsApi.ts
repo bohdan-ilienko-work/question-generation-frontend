@@ -22,6 +22,14 @@ export interface QuestionGenerate {
   model: GptModel;
   requiredLanguages: string[];
 }
+
+export interface ParseQuestions {
+  categoryId: string;
+  boilerplateText: string;
+  language: string;
+  type: QuestionType;
+}
+
 export const questionsApi = createApi({
   reducerPath: "questionsApi",
   baseQuery: baseQueryWithReauth,
@@ -258,6 +266,15 @@ export const questionsApi = createApi({
       invalidatesTags: ["GeneratedQuestions"],
     }),
 
+    parseQuestions: builder.mutation<Question[], ParseQuestions>({
+      query: (body) => ({
+        url: "/questions/parse",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["GeneratedQuestions"],
+    }),
+
     deleteQuestion: builder.mutation<void, string>({
       query: (id) => ({
         url: `/questions/${id}`,
@@ -335,4 +352,5 @@ export const {
   useTranslateGeneratedQuestionMutation,
   useValidateQuestionTranslationMutation,
   useValidateGeneratedQuestionTranslationMutation,
+  useParseQuestionsMutation,
 } = questionsApi;
