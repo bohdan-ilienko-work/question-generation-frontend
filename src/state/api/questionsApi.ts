@@ -74,7 +74,7 @@ export const questionsApi = createApi({
 
     updateGeneratedQuestion: builder.mutation<Question, Question>({
       query: (body) => ({
-        url: `/questions/generated/${body.id}`,
+        url: `/questions/generated/${body._id}`,
         method: "PUT",
         body,
       }),

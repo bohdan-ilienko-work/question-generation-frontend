@@ -83,7 +83,7 @@ const EditGeneratedQuestion = () => {
   const onSubmit = async (data: Question) => {
     try {
       await updateGeneratedQuestion(data).unwrap();
-      navigate("/questions/generated-questions");
+      navigate("/generated-questions");
     } catch (error) {
       console.error("Update failed:", error);
     }
