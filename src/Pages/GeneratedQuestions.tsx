@@ -267,7 +267,7 @@ const GeneratedQuestions = () => {
                       setSelectedQuestions(
                         new Set(
                           data?.responseObject.questions.map(
-                            (q: Question) => q.id
+                            (q: Question) => q._id
                           )
                         )
                       );
@@ -289,13 +289,14 @@ const GeneratedQuestions = () => {
               <th className="border border-gray-300 px-4 py-2">Difficulty</th>
               <th className="border border-gray-300 px-4 py-2">Status</th>
               <th className="border border-gray-300 px-4 py-2">Type</th>
-              <th className="border border-gray-300 px-4 py-2">Actions</th>
+              <th className="border border-gray-300 px-4 py-2 w-1/7">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {data?.responseObject.questions.map((question: Question) => {
-              const questionId =
-                question.id || question._id || Math.random().toString(36);
+              const questionId = question._id;
 
               return (
                 <tr key={questionId} className="hover:bg-gray-100">
@@ -343,7 +344,7 @@ const GeneratedQuestions = () => {
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     {question.type.replace("_", " ")}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2 flex items-center justify-center space-x-2">
+                  <td className="border border-gray-300 px-4 py-2 grid grid-cols-2 gap-4">
                     <button
                       className="bg-orange-500 text-white px-3 py-1 rounded-md"
                       onClick={() => confirmQuestion(questionId)}
@@ -356,13 +357,22 @@ const GeneratedQuestions = () => {
                     >
                       Reject
                     </button>
-                    <Edit2
-                      size={22}
-                      className="text-gray-600 cursor-pointer hover:text-black"
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center gap-2"
                       onClick={() =>
                         navigate(`/edit-generated-question/${questionId}`)
                       }
-                    />
+                    >
+                      Edit <Edit2 size={16} />
+                    </button>
+                    {question.source && (
+                      <button
+                        className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                        onClick={() => window.open(question.source, "_blank")}
+                      >
+                        Source
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

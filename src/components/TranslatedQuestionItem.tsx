@@ -44,7 +44,7 @@ const TranslatedQuestionItem = ({
     try {
       setLoadingLanguage(lang);
       const response = await translateQuestion({
-        questionId: question.id || question._id || "",
+        questionId: question._id,
         language: lang,
       }).unwrap();
 
@@ -97,7 +97,7 @@ const TranslatedQuestionItem = ({
       setSaveStatus("saving");
       await updateQuestion({
         ...question,
-        id: question.id || question._id || "",
+        _id: question._id,
         locales: questionLocales,
       }).unwrap();
       setSaveStatus("saved");
@@ -311,9 +311,7 @@ const TranslatedQuestionItem = ({
 
                         <button
                           onClick={() =>
-                            navigate(
-                              `/edit-question/${question.id || question._id}`
-                            )
+                            navigate(`/edit-question/${question._id}`)
                           }
                           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                         >

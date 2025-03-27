@@ -194,7 +194,7 @@ const QuestionsHistory = () => {
                       setSelectedQuestions(
                         new Set(
                           data?.responseObject.questions.map(
-                            (q: Question) => q.id
+                            (q: Question) => q._id
                           )
                         )
                       );
@@ -221,8 +221,7 @@ const QuestionsHistory = () => {
           </thead>
           <tbody>
             {data?.responseObject.questions.map((question: Question) => {
-              const questionId =
-                question.id || question._id || Math.random().toString(36);
+              const questionId = question._id;
 
               return (
                 <tr key={questionId} className="hover:bg-gray-100">

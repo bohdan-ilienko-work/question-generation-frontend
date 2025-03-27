@@ -50,11 +50,13 @@ export const questionsApi = createApi({
 
     updateQuestion: builder.mutation<Question, Question>({
       query: (body) => ({
-        url: `/questions/history/${body.id}`,
+        url: `/questions/history/${body._id}`,
         method: "PUT",
         body,
       }),
-      invalidatesTags: (_result, _error, { id }) => [{ type: "Questions", id }],
+      invalidatesTags: (_result, _error, { _id }) => [
+        { type: "Questions", _id },
+      ],
     }),
 
     getOneGeneratedQuestion: builder.query<

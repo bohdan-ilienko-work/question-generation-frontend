@@ -3,8 +3,8 @@ import { QuestionStatus } from "../types";
 import { QuestionType } from "../enums";
 
 export interface Question {
-  _id?: string;
-  id: string;
+  _id: string;
+  // id: string;
   categoryId: string;
   status: QuestionStatus;
   track?: string;
@@ -19,4 +19,5 @@ export interface Question {
   isValid: boolean;
   createdAt: string;
   updatedAt: string;
+  source?: string;
 }

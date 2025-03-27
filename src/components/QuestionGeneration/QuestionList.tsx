@@ -18,7 +18,7 @@ const GeneratedQuestionList: React.FC<GeneratedQuestionListProps> = ({
       <h3 className="text-lg font-semibold mb-2">Generated Questions:</h3>
       <div className="bg-white p-4 rounded-md shadow-md">
         {questions.map((q) => (
-          <GeneratedQuestion editPath={editPath} key={q.id} question={q} />
+          <GeneratedQuestion editPath={editPath} key={q._id} question={q} />
         ))}
       </div>
     </div>

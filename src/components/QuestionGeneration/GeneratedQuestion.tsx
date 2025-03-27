@@ -21,7 +21,7 @@ export const GeneratedQuestion = ({
     ...(question.locales[0].wrong || []),
   ];
   const { difficulty, status, type } = question;
-  const questionId = editPath === "/edit-question" ? question._id : question.id;
+  const questionId = (editPath = question._id);
 
   const [confirmQuestion] = useConfirmQuestionMutation();
   const [rejectQuestion] = useRejectQuestionMutation();
