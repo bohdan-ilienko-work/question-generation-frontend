@@ -80,8 +80,8 @@ export const questionsApi = createApi({
         method: "PUT",
         body,
       }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: "GeneratedQuestions", id },
+      invalidatesTags: (_result, _error, { _id }) => [
+        { type: "GeneratedQuestions", _id },
       ],
     }),
 
