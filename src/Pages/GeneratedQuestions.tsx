@@ -1,7 +1,11 @@
 import { useDispatch } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import { useGetGeneratedQuestionsQuery } from "../state/api/questionsApi";
-import { Question } from "../types";
+import {
+  useGetGeneratedQuestionsQuery,
+  useUpdateGeneratedQuestionMutation,
+  useValidateGeneratedQuestionCorrectnessMutation,
+} from "../state/api/questionsApi";
+import { ILocaleSchema, Question } from "../types";
 import {
   setGeneratedQuestionsPage,
   setGeneratedQuestionsLimit,
@@ -54,8 +58,23 @@ const GeneratedQuestions = () => {
   const [confirmQuestion] = useConfirmGeneratedQuestionMutation();
   const [rejectQuestion] = useRejectGeneratedQuestionMutation();
 
+  const [validateGeneratedQuestionCorrectnessMutation] =
+    useValidateGeneratedQuestionCorrectnessMutation();
+  // const [validateQuestionCorrectness] =
+  //   useValidateQuestionCorrectnessMutation();
+
+  const [correctnessSuggestions, setCorrectnessSuggestions] = useState<
+    | {
+        questionId: string;
+        suggestion: ILocaleSchema;
+      }[]
+    | null
+  >(null);
+
   const [confirmQuestions] = useConfirmGeneratedQuestionsMutation();
   const [rejectQuestions] = useRejectGeneratedQuestionsMutation();
+
+  const [updateGeneratedQuestion] = useUpdateGeneratedQuestionMutation();
 
   const toggleSelection = (id: string) => {
     setSelectedQuestions((prev) => {
@@ -67,6 +86,70 @@ const GeneratedQuestions = () => {
       }
       return newSelection;
     });
+  };
+
+  const handleCheckCorrectness = async (questionId: string) => {
+    try {
+      const response = await validateGeneratedQuestionCorrectnessMutation({
+        questionId,
+      }).unwrap();
+
+      if (response.responseObject && response.responseObject.suggestion) {
+        setCorrectnessSuggestions((prev) => {
+          if (prev) {
+            return [
+              ...prev,
+              {
+                questionId,
+                suggestion: response.responseObject.suggestion as ILocaleSchema,
+              },
+            ];
+          } else {
+            return [
+              {
+                questionId,
+                suggestion: response.responseObject.suggestion as ILocaleSchema,
+              },
+            ];
+          }
+        });
+      } else {
+        alert("No suggestions available");
+      }
+    } catch (error) {
+      console.error("Error checking correctness:", error);
+    }
+  };
+
+  const handleAcceptSuggestion = async (questionId: string) => {
+    const suggestion = correctnessSuggestions?.find(
+      (s) => s.questionId === questionId
+    )?.suggestion;
+    if (!suggestion) return;
+    const question = data?.responseObject.questions.find(
+      (q: Question) => q._id === questionId
+    );
+    if (!question) return;
+
+    const updatedQuestion = {
+      ...question,
+      locales: [
+        {
+          ...question.locales[0],
+          question: suggestion.question,
+          correct: suggestion.correct,
+          wrong: suggestion.wrong,
+        },
+      ],
+    };
+    try {
+      await updateGeneratedQuestion(updatedQuestion).unwrap();
+      setCorrectnessSuggestions((prev) =>
+        prev ? prev.filter((s) => s.questionId !== questionId) : null
+      );
+    } catch (error) {
+      console.error("Error accepting suggestion:", error);
+    }
   };
 
   const handleBulkConfirm = () => {
@@ -311,10 +394,25 @@ const GeneratedQuestions = () => {
                     {questionId}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {question.locales[0].question}
+                    {question.locales[0].question}{" "}
+                    <span className="text-gray-500">
+                      {correctnessSuggestions &&
+                        correctnessSuggestions.find(
+                          (suggestion) => suggestion.questionId === questionId
+                        ) && (
+                          <span className="text-orange-500">
+                            (Suggestion available):{" "}
+                            {
+                              correctnessSuggestions.find(
+                                (suggestion) =>
+                                  suggestion.questionId === questionId
+                              )?.suggestion.question
+                            }
+                          </span>
+                        )}
+                    </span>
                   </td>
 
-                  {/* Conditional rendering for map or text answers */}
                   <td className="border border-gray-300 px-4 py-2 w-1/4">
                     {question.type === "map" ? (
                       <MapWithMarker
@@ -324,14 +422,40 @@ const GeneratedQuestions = () => {
                         ]}
                       />
                     ) : (
-                      <ul className="list-none grid grid-cols-2 gap-4">
-                        <li className="font-bold text-green-600">
-                          ✔ {question.locales[0].correct}
-                        </li>
-                        {question.locales[0].wrong?.map((answer, idx) => (
-                          <li key={idx}>✗ {answer}</li>
-                        ))}
-                      </ul>
+                      <>
+                        <ul className="list-none grid grid-cols-2 gap-4">
+                          <li className="font-bold text-green-600">
+                            ✔ {question.locales[0].correct}
+                          </li>
+                          {question.locales[0].wrong?.map((answer, idx) => (
+                            <li key={idx}>✗ {answer}</li>
+                          ))}
+                        </ul>
+                        {correctnessSuggestions &&
+                          (() => {
+                            const suggestionObj = correctnessSuggestions.find(
+                              (suggestion) =>
+                                suggestion.questionId === questionId
+                            );
+                            return suggestionObj ? (
+                              <>
+                                {" "}
+                                <div className="my-2 border-t border-gray-300"></div>
+                                (Suggestion available):
+                                <ul className="list-none grid grid-cols-2 gap-4">
+                                  <li className="font-bold text-green-600">
+                                    ✔ {suggestionObj.suggestion.question}
+                                  </li>
+                                  {suggestionObj.suggestion.wrong?.map(
+                                    (wrongAnswer, idx) => (
+                                      <li key={idx}>✗ {wrongAnswer}</li>
+                                    )
+                                  )}
+                                </ul>
+                              </>
+                            ) : null;
+                          })()}
+                      </>
                     )}
                   </td>
 
@@ -365,6 +489,23 @@ const GeneratedQuestions = () => {
                     >
                       Edit <Edit2 size={16} />
                     </button>
+                    <button
+                      className="bg-gray-500 text-white px-3 py-1 rounded-md"
+                      onClick={() => handleCheckCorrectness(questionId)}
+                    >
+                      Check
+                    </button>
+                    {correctnessSuggestions &&
+                      correctnessSuggestions.find(
+                        (suggestion) => suggestion.questionId === questionId
+                      ) && (
+                        <button
+                          className="bg-green-500 text-white px-3 py-1 rounded-md"
+                          onClick={() => handleAcceptSuggestion(questionId)}
+                        >
+                          Accept Suggestion
+                        </button>
+                      )}
                     {question.source && (
                       <button
                         className="bg-blue-500 text-white px-3 py-1 rounded-md"
