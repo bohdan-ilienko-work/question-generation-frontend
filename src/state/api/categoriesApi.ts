@@ -53,8 +53,24 @@ export const categoriesApi = createApi({
       }),
       invalidatesTags: ["Categories"],
     }),
+    clearCategoryCache: builder.mutation<
+      {
+        message: string;
+      },
+      {
+        categoryId: string;
+      }
+    >({
+      query: ({ categoryId }) => ({
+        url: `/categories/${categoryId}/clear-cache`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useGetCategoriesQuery, useSyncCategoriesMutation } =
-  categoriesApi;
+export const {
+  useGetCategoriesQuery,
+  useSyncCategoriesMutation,
+  useClearCategoryCacheMutation,
+} = categoriesApi;
