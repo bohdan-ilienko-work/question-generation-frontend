@@ -17,6 +17,7 @@ import {
   useRejectGeneratedQuestionMutation,
   useConfirmGeneratedQuestionsMutation,
   useRejectGeneratedQuestionsMutation,
+  useValidateGeneratedQuestionsCorrectnessMutation,
 } from "../state/api/questionsApi";
 import { useNavigate } from "react-router-dom";
 import MapWithMarker from "../components/MapWithMarker";
@@ -60,9 +61,10 @@ const GeneratedQuestions = () => {
 
   const [validateGeneratedQuestionCorrectnessMutation] =
     useValidateGeneratedQuestionCorrectnessMutation();
-  // const [validateQuestionCorrectness] =
-  //   useValidateQuestionCorrectnessMutation();
-
+  const [
+    validateGeneratedQuestionsCorrectnessMutation,
+    { isLoading: isLoadingCorrectnessCheck },
+  ] = useValidateGeneratedQuestionsCorrectnessMutation();
   const [correctnessSuggestions, setCorrectnessSuggestions] = useState<
     | {
         questionId: string;
@@ -160,6 +162,67 @@ const GeneratedQuestions = () => {
   const handleBulkReject = () => {
     rejectQuestions(Array.from(selectedQuestions));
     setSelectedQuestions(new Set());
+  };
+
+  const handleBulkCheckCorrectness = async () => {
+    try {
+      const response = await validateGeneratedQuestionsCorrectnessMutation({
+        questionIds: Array.from(selectedQuestions),
+      }).unwrap();
+      if (
+        response.responseObject &&
+        !response.responseObject.find((s) => s.suggestion !== null)
+      ) {
+        return alert("No suggestions available");
+      }
+
+      if (response.responseObject && Array.isArray(response.responseObject)) {
+        setCorrectnessSuggestions((prev) => {
+          if (prev) {
+            return [
+              ...prev,
+              ...(response.responseObject
+                .map((checked) => {
+                  if (checked.suggestion) {
+                    return {
+                      questionId: checked.questionId,
+                      suggestion: checked.suggestion as ILocaleSchema,
+                    };
+                  }
+                  return;
+                })
+                .filter((checked) => checked !== undefined) as {
+                questionId: string;
+                suggestion: ILocaleSchema;
+              }[]),
+            ];
+          } else {
+            return response.responseObject
+              .map((checked) => {
+                if (checked.suggestion) {
+                  return {
+                    questionId: checked.questionId,
+                    suggestion: checked.suggestion as ILocaleSchema,
+                  };
+                }
+                return;
+              })
+              .filter((checked) => checked !== undefined) as {
+              questionId: string;
+              suggestion: ILocaleSchema;
+            }[];
+          }
+        });
+        setSelectedQuestions(new Set());
+      }
+    } catch (error) {
+      console.error("Error checking correctness:", error);
+      if (error instanceof Error) {
+        alert(`Error checking correctness: ${error.message}`);
+      } else {
+        alert("Error checking correctness: Unknown error");
+      }
+    }
   };
 
   if (isLoading) return <Loader />;
@@ -333,6 +396,21 @@ const GeneratedQuestions = () => {
             onClick={handleBulkReject}
           >
             Reject Selected
+          </button>
+          <button
+            className="bg-blue-500 text-white px-3 py-1 rounded-md"
+            onClick={handleBulkCheckCorrectness}
+            disabled={isLoadingCorrectnessCheck}
+          >
+            {isLoadingCorrectnessCheck
+              ? "Checking..."
+              : "Check Correctness of Selected"}
+          </button>
+          <button
+            className="bg-gray-500 text-white px-3 py-1 rounded-md"
+            onClick={() => setSelectedQuestions(new Set())}
+          >
+            Deselect All
           </button>
         </div>
       )}

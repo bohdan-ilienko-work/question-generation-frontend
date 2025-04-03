@@ -374,6 +374,51 @@ export const questionsApi = createApi({
         body: { originalLanguage, targetLanguage },
       }),
     }),
+
+    validateQuestionsCorrectness: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          questionId: string;
+          isValid: boolean;
+          suggestion: Partial<ILocaleSchema> | null;
+          totalTokensUsed: number;
+          completionTokensUsed: number;
+        };
+      },
+      {
+        questionIds: string[];
+      }
+    >({
+      query: ({ questionIds }) => ({
+        url: `/questions/history/validate-correctness-batch`,
+        method: "POST",
+        body: { ids: questionIds },
+      }),
+      // invalidatesTags: ["Questions"],
+    }),
+    validateGeneratedQuestionsCorrectness: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          questionId: string;
+          isValid: boolean;
+          suggestion: Partial<ILocaleSchema> | null;
+          totalTokensUsed: number;
+          completionTokensUsed: number;
+        }[];
+      },
+      {
+        questionIds: string[];
+      }
+    >({
+      query: ({ questionIds }) => ({
+        url: `/questions/generated/validate-correctness-batch`,
+        method: "POST",
+        body: { ids: questionIds },
+      }),
+      // invalidatesTags: ["GeneratedQuestions"],
+    }),
   }),
 });
 
@@ -401,4 +446,6 @@ export const {
   useParseQuestionsMutation,
   useValidateGeneratedQuestionCorrectnessMutation,
   useValidateQuestionCorrectnessMutation,
+  useValidateQuestionsCorrectnessMutation,
+  useValidateGeneratedQuestionsCorrectnessMutation,
 } = questionsApi;
