@@ -16,7 +16,7 @@ export interface QuestionGenerate {
   difficulty: 1 | 2 | 3 | 4 | 5;
   max_tokens?: number;
   count: number;
-  category: string;
+  category: number;
   temperature: number;
   type: QuestionType;
   model: GptModel;

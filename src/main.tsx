@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { store } from "./store.ts";
 import { Provider } from "react-redux";
+import "antd/dist/reset.css"; // для версии 5+
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>

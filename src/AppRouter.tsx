@@ -6,6 +6,10 @@ import {
 import RequireAuth from "./components/RequireAuth";
 import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
+import CategoriesCrud from "./Pages/CategoriesCrud";
+import CreateCategory from "./Pages/CreateCategory";
+import DeleteCategory from "./Pages/DeleteCategory";
+import EditCategory from "./Pages/EditCategory";
 
 // Динамическая загрузка страницw
 const Login = lazy(() => import("./Pages/Login"));
@@ -101,6 +105,38 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<p>Loading...</p>}>
             <DeeplLogs />
+          </Suspense>
+        ),
+      },
+      {
+        path: "categories-crud",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <CategoriesCrud />
+          </Suspense>
+        ),
+      },
+      {
+        path: "categories-crud/create/:parentId",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <CreateCategory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "categories-crud/edit/:categoryId",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <EditCategory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "categories-crud/delete/:categoryId",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <DeleteCategory />
           </Suspense>
         ),
       },

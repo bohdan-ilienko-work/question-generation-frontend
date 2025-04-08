@@ -76,6 +76,11 @@ export default function DashboardWrapper() {
             icon="/language-translation-svgrepo-com.svg"
           />
           <SidebarLink
+            to="/categories-crud"
+            label="Categories Editor"
+            icon="/category-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/settings"
             label="Settings"
             icon="/settings-svgrepo-com.svg"
@@ -84,7 +89,8 @@ export default function DashboardWrapper() {
           {/* Logout Button */}
           <button
             onClick={handleLogoutClick}
-            className="p-2 rounded-md text-white bg-red-500 font-medium transition hover:bg-red-600 flex items-center"
+            style={{ color: "white" }}
+            className="p-2 rounded-md bg-red-500 font-medium transition hover:bg-red-600 flex items-center"
           >
             Logout
             <svg

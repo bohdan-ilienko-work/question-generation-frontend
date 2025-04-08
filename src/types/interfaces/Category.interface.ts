@@ -4,10 +4,11 @@ export interface CategoryLocaleSchema {
 }
 
 export interface Category {
-  _id: string;
+  _id: number;
   name: string;
   parentId: number | null;
   ancestors: number[];
   hash?: string;
   locales: CategoryLocaleSchema[];
+  children?: Category[];
 }
