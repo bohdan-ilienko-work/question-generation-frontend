@@ -29,7 +29,7 @@ export default function EditCategory() {
   const [form] = Form.useForm();
 
   const { data, isLoading: isLoadingCategory } = useGetCategoryByIdQuery({
-    categoryId: categoryId!,
+    categoryId: Number(categoryId!),
   });
 
   const [updateCategory, { isLoading }] = useUpdateCategoryMutation();
@@ -108,7 +108,7 @@ export default function EditCategory() {
   const handleSubmit = async (values: { name: string }) => {
     try {
       await updateCategory({
-        categoryId: categoryId!,
+        categoryId: Number(categoryId!),
         name: values.name,
         locales,
       }).unwrap();

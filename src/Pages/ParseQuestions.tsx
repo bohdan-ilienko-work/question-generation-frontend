@@ -90,7 +90,8 @@ const ParseQuestions = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await parseQuestions({
         boilerplateText: state.boilerplateText,
-        categoryId: state.category?._id || "",
+        categoryId:
+          typeof state.category?._id === "number" ? state.category._id : 0,
         language: state.language,
         type: state.type,
       }).unwrap();

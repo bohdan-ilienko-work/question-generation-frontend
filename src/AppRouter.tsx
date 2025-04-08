@@ -4,12 +4,12 @@ import {
   Navigate,
 } from "react-router-dom";
 import RequireAuth from "./components/RequireAuth";
-import DashboardWrapper from "./components/DashboardWrapper";
+// import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
-import CategoriesCrud from "./Pages/CategoriesCrud";
-import CreateCategory from "./Pages/CreateCategory";
-import DeleteCategory from "./Pages/DeleteCategory";
-import EditCategory from "./Pages/EditCategory";
+// import CategoriesCrud from "./Pages/CategoriesCrud";
+// import CreateCategory from "./Pages/CreateCategory";
+// import DeleteCategory from "./Pages/DeleteCategory";
+// import EditCategory from "./Pages/EditCategory";
 
 // Динамическая загрузка страницw
 const Login = lazy(() => import("./Pages/Login"));
@@ -24,6 +24,11 @@ const EditGeneratedQuestion = lazy(
 const DeeplLogs = lazy(() => import("./Pages/DeeplLogs"));
 const ParseQuestions = lazy(() => import("./Pages/ParseQuestions"));
 const TranslatedQuestions = lazy(() => import("./Pages/TranslatedQuestions"));
+const CategoriesCrud = lazy(() => import("./Pages/CategoriesCrud"));
+const CreateCategory = lazy(() => import("./Pages/CreateCategory"));
+const EditCategory = lazy(() => import("./Pages/EditCategory"));
+const DeleteCategory = lazy(() => import("./Pages/DeleteCategory"));
+const DashboardWrapper = lazy(() => import("./components/DashboardWrapper"));
 
 const router = createBrowserRouter([
   {

@@ -119,7 +119,7 @@ export default function CategoriesCrud() {
     handleEditCategory
   );
 
-  const onSelect: TreeProps["onSelect"] = (selectedKeys, info) => {
+  const onSelect: TreeProps["onSelect"] = (_selectedKeys, info) => {
     const node = info.node as unknown as DataNode & { raw: Category };
     setSelectedCategory(node.raw);
   };

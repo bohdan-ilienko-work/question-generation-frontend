@@ -47,7 +47,7 @@ export const categoriesApi = createApi({
         responseObject: Category;
       },
       {
-        categoryId: string;
+        categoryId: number;
       }
     >({
       query: ({ categoryId }) => ({
@@ -75,7 +75,7 @@ export const categoriesApi = createApi({
         message: string;
       },
       {
-        categoryId: string;
+        categoryId: number;
       }
     >({
       query: ({ categoryId }) => ({
@@ -122,7 +122,7 @@ export const categoriesApi = createApi({
         responseObject: Category;
       },
       {
-        categoryId: string;
+        categoryId: number;
         name?: string;
         parentId?: string;
         ancestors?: string[];

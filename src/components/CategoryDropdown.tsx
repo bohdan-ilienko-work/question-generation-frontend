@@ -51,9 +51,9 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({
     };
   }, [dropdownOpen]);
 
-  const handleClearCache = async (categoryId: string) => {
+  const handleClearCache = async (categoryId: number) => {
     try {
-      await clearCache({ categoryId }).unwrap();
+      await clearCache({ categoryId: Number(categoryId) }).unwrap();
     } catch (error) {
       console.error("Failed to clear cache:", error);
       alert("Failed to clear cache");

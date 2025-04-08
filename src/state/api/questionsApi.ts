@@ -24,7 +24,7 @@ export interface QuestionGenerate {
 }
 
 export interface ParseQuestions {
-  categoryId: string;
+  categoryId: number;
   boilerplateText: string;
   language: string;
   type: QuestionType;
