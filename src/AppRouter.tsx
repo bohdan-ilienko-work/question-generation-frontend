@@ -157,7 +157,9 @@ const router = createBrowserRouter([
   },
 
   { path: "*", element: <Navigate to="/generate-question" replace /> },
-]);
+], {
+  basename: "/generator",
+});
 
 export const AppRouter: React.FC = () => {
   return <RouterProvider router={router} />;
