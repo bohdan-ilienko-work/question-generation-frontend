@@ -75,6 +75,9 @@ export default function DashboardWrapper() {
             label="Translated Questions"
             icon="/language-translation-svgrepo-com.svg"
           />
+          <a href="http://gen.battleofgeniuses.com/editor/" target="_blank" className="relative flex items-center justify-between w-full p-2 font-medium transition-colors text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">
+            Go to Editor
+          </a>
           <SidebarLink
             to="/categories-crud"
             label="Categories Editor"
