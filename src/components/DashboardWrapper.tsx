@@ -16,10 +16,9 @@ const SidebarLink = ({
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `relative flex items-center justify-between w-full p-2 font-medium transition-colors ${
-        isActive
-          ? "text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-100 after:transition-transform after:duration-300"
-          : "text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100"
+      `relative flex items-center justify-between w-full p-2 font-medium transition-colors ${isActive
+        ? "text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-100 after:transition-transform after:duration-300"
+        : "text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100"
       }`
     }
   >
@@ -48,50 +47,55 @@ export default function DashboardWrapper() {
           <SidebarLink
             to="/parse-questions"
             label="Parse Questions"
-            icon="/read-era-svgrepo-com.svg"
+            icon="/generator/read-era-svgrepo-com.svg"
           />
           <SidebarLink
             to="/generate-question"
             label="Generate Questions"
-            icon="/openai-svgrepo-com.svg"
+            icon="/generator/openai-svgrepo-com.svg"
           />
           <SidebarLink
             to="/generated-questions"
             label="Generated Questions"
-            icon="/list-ul-alt-svgrepo-com.svg"
+            icon="/generator/list-ul-alt-svgrepo-com.svg"
           />
           <SidebarLink
             to="/duplication-check"
             label="Duplication Check"
-            icon="/duplicate-svgrepo-com.svg"
+            icon="/generator/duplicate-svgrepo-com.svg"
           />
           <SidebarLink
             to="/questions-history"
             label="Questions History"
-            icon="/list-ul-alt-svgrepo-com.svg"
+            icon="/generator/list-ul-alt-svgrepo-com.svg"
           />
           <SidebarLink
             to="/deepl-logs"
             label="DeepL Logs"
-            icon="/deepl-svgrepo-com.svg"
+            icon="/generator/deepl-svgrepo-com.svg"
           />
           <SidebarLink
             to="/translated-questions"
             label="Translated Questions"
-            icon="/language-translation-svgrepo-com.svg"
+            icon="/generator/language-translation-svgrepo-com.svg"
           />
-          <a href="http://gen.battleofgeniuses.com/editor/" target="_blank" className="relative flex items-center justify-between w-full p-2 font-medium transition-colors text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">
+          <a href="https://server.battleofgeniuses.com/" target="_blank" className="relative flex items-center justify-between w-full p-2 font-medium transition-colors text-gray-700 hover:text-blue-500 after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-blue-500 after:scale-x-0 after:transition-transform after:duration-300 hover:after:scale-x-100">
             Go to Editor
+            <img
+              src="/generator/link-svgrepo-com.svg"
+              alt="Go to Editor icon"
+              className="w-4 h-4 ml-2"
+            />
           </a>
           <SidebarLink
             to="/categories-crud"
             label="Categories Editor"
-            icon="/category-svgrepo-com.svg"
+            icon="/generator/category-svgrepo-com.svg"
           />
           <SidebarLink
             to="/settings"
             label="Settings"
-            icon="/settings-svgrepo-com.svg"
+            icon="/generator/settings-svgrepo-com.svg"
           />
 
           {/* Logout Button */}
