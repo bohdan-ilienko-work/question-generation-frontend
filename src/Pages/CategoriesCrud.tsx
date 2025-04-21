@@ -39,10 +39,11 @@ const buildTreeData = (
   handleDeleteCategory: (categoryId: number) => void,
   handleEditCategory: (categoryId: number) => void
 ): DataNode[] => {
+  // console.log("Categories", categories);
   const map = new Map<number, DataNode & { raw: Category }>();
   const tree: (DataNode & { raw: Category })[] = [];
 
-  categories.forEach((cat) => {
+  for (const cat of categories) {
     const titleText =
       cat.locales.find((l) => l.language === language)?.value || cat.name;
 
@@ -72,26 +73,28 @@ const buildTreeData = (
       </div>
     );
 
-    map.set(cat._id, {
+    const node: DataNode & { raw: Category } = {
       key: cat._id.toString(),
       title,
       children: [],
       raw: cat,
-    });
-  });
+    };
 
-  categories.forEach((cat) => {
+    map.set(cat._id, node);
+  }
+
+  for (const cat of categories) {
     const node = map.get(cat._id)!;
-    if (cat.parentId && map.has(Number(cat.parentId))) {
-      const parent = map.get(Number(cat.parentId))!;
-      parent.children!.push(node);
+    if (cat.parentId != null && map.has(cat.parentId)) {
+      map.get(cat.parentId)!.children!.push(node);
     } else {
       tree.push(node);
     }
-  });
+  }
 
   return tree;
 };
+
 
 export default function CategoriesCrud() {
   const navigate = useNavigate();
