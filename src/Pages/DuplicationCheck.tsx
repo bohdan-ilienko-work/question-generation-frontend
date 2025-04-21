@@ -170,12 +170,6 @@ export default function DuplicationCheck() {
         );
     };
 
-    const filteredCategories = useMemo(() => {
-        return categoriesList?.responseObject.categories.filter(
-            category => category.name.toLowerCase().includes(searchText.toLowerCase())
-        ) || [];
-    }, [categoriesList, searchText]);
-
     const treeData = useMemo(() => {
         return buildTreeData(
             categoriesList?.responseObject.categories || [],
