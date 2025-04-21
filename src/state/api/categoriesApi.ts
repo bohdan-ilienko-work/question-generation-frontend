@@ -8,7 +8,7 @@ import { setCategoriesTotalPages } from "../slices";
 export const categoriesApi = createApi({
   reducerPath: "categoriesApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Categories"],
+  tagTypes: ["Categories", "CategoriesWithQuestionsCount"],
   endpoints: (builder) => ({
     getCategories: builder.query<
       {
@@ -40,6 +40,20 @@ export const categoriesApi = createApi({
           console.error(error);
         }
       },
+    }),
+    getCategoriesWithQuestionsCount: builder.query<
+      {
+        message: string;
+        responseObject: {
+          categories: (Category & { questionsCount: number })[];
+        };
+      },
+      void
+    >({
+      query: () => ({
+        url: "/categories/with-questions-count"
+      }),
+      providesTags: ["CategoriesWithQuestionsCount"],
     }),
     getCategoryById: builder.query<
       {
@@ -158,6 +172,7 @@ export const categoriesApi = createApi({
 
 export const {
   useGetCategoriesQuery,
+  useGetCategoriesWithQuestionsCountQuery,
   useGetCategoryByIdQuery,
   useSyncCategoriesMutation,
   useClearCategoryCacheMutation,

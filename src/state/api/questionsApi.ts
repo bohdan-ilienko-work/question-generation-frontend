@@ -417,7 +417,23 @@ export const questionsApi = createApi({
         method: "POST",
         body: { ids: questionIds },
       }),
-      // invalidatesTags: ["GeneratedQuestions"],
+    }),
+    checkDuplicatedQuestions: builder.mutation<
+      {
+        message: string;
+        responseObject: {
+          duplicates: string[][];
+          questions: Question[];
+        };
+      },
+      {
+        categoryId: number;
+      }
+    >({
+      query: ({ categoryId }) => ({
+        url: `/questions/generated/check-duplicates/${categoryId}`,
+        method: "POST",
+      }),
     }),
   }),
 });
@@ -448,4 +464,5 @@ export const {
   useValidateQuestionCorrectnessMutation,
   useValidateQuestionsCorrectnessMutation,
   useValidateGeneratedQuestionsCorrectnessMutation,
+  useCheckDuplicatedQuestionsMutation,
 } = questionsApi;

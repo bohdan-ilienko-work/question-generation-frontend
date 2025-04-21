@@ -6,6 +6,7 @@ import {
 import RequireAuth from "./components/RequireAuth";
 // import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
+// import DuplicationCheck from "./Pages/DuplicationCheck";
 // import CategoriesCrud from "./Pages/CategoriesCrud";
 // import CreateCategory from "./Pages/CreateCategory";
 // import DeleteCategory from "./Pages/DeleteCategory";
@@ -29,7 +30,9 @@ const CreateCategory = lazy(() => import("./Pages/CreateCategory"));
 const EditCategory = lazy(() => import("./Pages/EditCategory"));
 const DeleteCategory = lazy(() => import("./Pages/DeleteCategory"));
 const DashboardWrapper = lazy(() => import("./components/DashboardWrapper"));
-
+const DuplicationCheck = lazy(
+  () => import("./Pages/DuplicationCheck")
+);
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -70,6 +73,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<p>Loading...</p>}>
             <GeneratedQuestions />
+          </Suspense>
+        ),
+      },
+      {
+        path: "duplication-check",
+        element: (
+          <Suspense fallback={<p>Loading...</p>}>
+            <DuplicationCheck />
           </Suspense>
         ),
       },

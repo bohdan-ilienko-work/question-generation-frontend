@@ -14,8 +14,7 @@ interface LoginRequest {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl:
-    import.meta.env.VITE_API_URL || "http://gen.battleofgeniuses.com/api/",
+  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:3001/",
   prepareHeaders: (headers, { getState }) => {
     const token = (
       getState() as {

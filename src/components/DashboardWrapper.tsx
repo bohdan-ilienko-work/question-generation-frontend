@@ -61,6 +61,11 @@ export default function DashboardWrapper() {
             icon="/list-ul-alt-svgrepo-com.svg"
           />
           <SidebarLink
+            to="/duplication-check"
+            label="Duplication Check"
+            icon="/duplicate-svgrepo-com.svg"
+          />
+          <SidebarLink
             to="/questions-history"
             label="Questions History"
             icon="/list-ul-alt-svgrepo-com.svg"
