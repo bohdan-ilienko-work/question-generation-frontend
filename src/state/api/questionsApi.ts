@@ -139,7 +139,7 @@ export const questionsApi = createApi({
         status?: QuestionStatus;
         localeIncluded?: string;
         localeExcluded?: string;
-        category?: string;
+        category?: number;
         title?: string;
         type?: QuestionType;
       }
@@ -238,11 +238,11 @@ export const questionsApi = createApi({
           totalPages: number;
         };
       },
-      { limit: number; page?: number }
+      { limit: number; page?: number, category?: number }
     >({
-      query: ({ limit, page = 1 }) => ({
+      query: ({ limit, page = 1, ...filters }) => ({
         url: "/questions/generated",
-        params: { limit, page },
+        params: { limit, page, ...filters },
       }),
       providesTags: ["GeneratedQuestions"],
 
@@ -435,6 +435,40 @@ export const questionsApi = createApi({
         method: "POST",
       }),
     }),
+    updateQuestionsCategory: builder.mutation<
+      {
+        message: string;
+        responseObject: Question[];
+      },
+      {
+        categoryId: number;
+        questionIds: string[];
+      }
+    >({
+      query: ({ categoryId, questionIds }) => ({
+        url: '/questions/generated/update-category',
+        method: 'PATCH',
+        body: { categoryId, questionIds }
+      }),
+      invalidatesTags: ['Questions']
+    }),
+    updateGeneratedQuestionsCategory: builder.mutation<
+      {
+        message: string;
+        responseObject: Question[];
+      },
+      {
+        categoryId: number;
+        questionIds: string[];
+      }
+    >({
+      query: ({ categoryId, questionIds }) => ({
+        url: '/questions/generated/update-category',
+        method: 'PATCH',
+        body: { categoryId, questionIds }
+      }),
+      invalidatesTags: ['GeneratedQuestions']
+    })
   }),
 });
 
@@ -465,4 +499,6 @@ export const {
   useValidateQuestionsCorrectnessMutation,
   useValidateGeneratedQuestionsCorrectnessMutation,
   useCheckDuplicatedQuestionsMutation,
+  useUpdateQuestionsCategoryMutation,
+  useUpdateGeneratedQuestionsCategoryMutation
 } = questionsApi;
