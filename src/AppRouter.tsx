@@ -4,13 +4,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import RequireAuth from "./components/RequireAuth";
-// import DashboardWrapper from "./components/DashboardWrapper";
 import { lazy, Suspense } from "react";
-// import DuplicationCheck from "./Pages/DuplicationCheck";
-// import CategoriesCrud from "./Pages/CategoriesCrud";
-// import CreateCategory from "./Pages/CreateCategory";
-// import DeleteCategory from "./Pages/DeleteCategory";
-// import EditCategory from "./Pages/EditCategory";
+import Loader from "./components/Loader";
 
 // Динамическая загрузка страницw
 const Login = lazy(() => import("./Pages/Login"));
@@ -37,7 +32,7 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: (
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={<Loader />}>
         <Login />
       </Suspense>
     ),
@@ -55,7 +50,7 @@ const router = createBrowserRouter([
       {
         path: "parse-questions",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <ParseQuestions />
           </Suspense>
         ),
@@ -63,7 +58,7 @@ const router = createBrowserRouter([
       {
         path: "generate-question",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <QuestionGeneration />
           </Suspense>
         ),
@@ -71,7 +66,7 @@ const router = createBrowserRouter([
       {
         path: "generated-questions",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <GeneratedQuestions />
           </Suspense>
         ),
@@ -79,7 +74,7 @@ const router = createBrowserRouter([
       {
         path: "duplication-check",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <DuplicationCheck />
           </Suspense>
         ),
@@ -87,7 +82,7 @@ const router = createBrowserRouter([
       {
         path: "questions-history",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <QuestionsHistory />
           </Suspense>
         ),
@@ -95,7 +90,7 @@ const router = createBrowserRouter([
       {
         path: "edit-question/:id",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <EditQuestion />
           </Suspense>
         ),
@@ -103,7 +98,7 @@ const router = createBrowserRouter([
       {
         path: "edit-generated-question/:id",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <EditGeneratedQuestion />
           </Suspense>
         ),
@@ -111,7 +106,7 @@ const router = createBrowserRouter([
       {
         path: "translated-questions",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <TranslatedQuestions />
           </Suspense>
         ),
@@ -119,7 +114,7 @@ const router = createBrowserRouter([
       {
         path: "deepl-logs",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <DeeplLogs />
           </Suspense>
         ),
@@ -127,7 +122,7 @@ const router = createBrowserRouter([
       {
         path: "categories-crud",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <CategoriesCrud />
           </Suspense>
         ),
@@ -135,7 +130,7 @@ const router = createBrowserRouter([
       {
         path: "categories-crud/create/:parentId",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <CreateCategory />
           </Suspense>
         ),
@@ -143,7 +138,7 @@ const router = createBrowserRouter([
       {
         path: "categories-crud/edit/:categoryId",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <EditCategory />
           </Suspense>
         ),
@@ -151,7 +146,7 @@ const router = createBrowserRouter([
       {
         path: "categories-crud/delete/:categoryId",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <DeleteCategory />
           </Suspense>
         ),
@@ -159,7 +154,7 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: (
-          <Suspense fallback={<p>Loading...</p>}>
+          <Suspense fallback={<Loader />}>
             <Settings />
           </Suspense>
         ),

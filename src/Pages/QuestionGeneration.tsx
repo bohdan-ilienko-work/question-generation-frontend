@@ -14,6 +14,7 @@ import PromptInput from "../components/QuestionGeneration/PromptInput";
 import ErrorMessage from "../components/QuestionGeneration/ErrorMessage";
 import TokensUsed from "../components/QuestionGeneration/TokensUsed";
 import { NavLink } from "react-router-dom";
+import { Button } from "antd";
 
 const QuestionGeneration: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -56,46 +57,24 @@ const QuestionGeneration: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded-md p-6 w-full max-w-3xl">
-        <GenerateQuestionsForm state={state} dispatch={dispatch} />
+
+      <GenerateQuestionsForm state={state} dispatch={dispatch} />
+
+      <div style={{ width: "100%", maxWidth: 720 }}>
+        <PromptInput state={state} dispatch={dispatch} />
+        <Button
+          type="primary"
+          size="large"
+          style={{ marginTop: 24, minWidth: 140, fontWeight: 600 }}
+          onClick={handleGenerate}
+          loading={isLoading}
+          disabled={isLoading}
+          block
+        >
+          Generate
+        </Button>
       </div>
 
-      <PromptInput
-        state={state}
-        dispatch={dispatch}
-        // handleGenerate={handleGenerate}
-      />
-      <button
-        onClick={handleGenerate}
-        className={`text-white p-2 rounded-md flex items-center gap-2 mt-4 ${
-          isLoading ? "bg-gray-400" : "bg-blue-500"
-        }`}
-        disabled={isLoading}
-      >
-        Generate
-        {isLoading ? (
-          <svg
-            className="animate-spin h-5 w-5 mr-2 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
-            ></path>
-          </svg>
-        ) : null}
-      </button>
 
       <ErrorMessage error={state.error} />
       <TokensUsed tokensUsed={state.tokensUsed} />

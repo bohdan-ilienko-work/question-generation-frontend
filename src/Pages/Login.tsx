@@ -3,27 +3,27 @@ import { useLoginMutation } from "../state/api/authApi";
 import { useNavigate } from "react-router-dom";
 import { setTokens } from "../state/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { Form, Input, Button, Typography, Card, Alert, Space, notification } from "antd";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
-// Определение типов для `useReducer`
+const { Title, Text, Link } = Typography;
+
 type State = {
   username: string;
   password: string;
   error: string | null;
 };
-
 type Action =
   | { type: "SET_FIELD"; field: "username" | "password"; value: string }
   | { type: "SET_ERROR"; error: string | null }
   | { type: "RESET" };
 
-// Начальное состояние
 const initialState: State = {
   username: "",
   password: "",
   error: null,
 };
 
-// Редюсер для управления состоянием
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "SET_FIELD":
@@ -39,104 +39,120 @@ const reducer = (state: State, action: Action): State => {
 
 const Login = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [loginMutation] = useLoginMutation();
+  const [loginMutation, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const dispatchAction = useDispatch();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const [api, contextHolder] = notification.useNotification();
+
+  const handleFinish = async (values: { username: string; password: string }) => {
     dispatch({ type: "SET_ERROR", error: null });
-
     try {
-      const tokens = await loginMutation({
-        username: state.username,
-        password: state.password,
-      }).unwrap();
-
+      const tokens = await loginMutation(values).unwrap();
       dispatchAction(setTokens(tokens.responseObject));
-      navigate("/"); // Redirect to home page
+      navigate("/");
     } catch {
       dispatch({ type: "SET_ERROR", error: "Incorrect Login Data" });
     }
   };
 
+  const handleForgot = () => {
+    api.info({
+      message: "Not implemented",
+      description: "Forgot password functionality is not yet implemented.",
+      placement: "topRight",
+    });
+  };
+
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div
-        className={`bg-white p-8 shadow-md rounded-md flex transition-all duration-300 ${
-          state.error ? "w-[700px]" : "w-[400px]"
-        }`}
+    <div style={{
+      minHeight: "100vh",
+      background: "#f5f6fa",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}>
+      {contextHolder}
+      <Card
+        style={{
+          width: 380,
+          padding: "30px 20px",
+          borderRadius: 10,
+          boxShadow: "0 2px 16px rgba(0,0,0,0.07)"
+        }}
       >
-        <div className="flex-1">
-          {/* Логотип и название */}
-          <div className="flex items-center">
-            <img
-              src="/brain-icon.png"
-              alt="QuizMaster Logo"
-              className="w-8 h-8 mr-2"
-            />
-            <h1 className="text-xl font-bold text-gray-700">QuizMaster</h1>
+        <Space direction="vertical" style={{ width: "100%" }} size="large">
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <img src="/generator/brain-icon.png" alt="QuizMaster Logo" style={{ width: 32, height: 32 }} />
+            <Title level={4} style={{ margin: 0, fontWeight: 600 }}>QuizMaster</Title>
           </div>
-          <h2 className="text-xl font-semibold mt-2">Welcome Back!</h2>
-          <p className="text-gray-500 text-sm mt-1">
-            Login to continue exploring the world of quizzes.
-          </p>
+          <Title level={5} style={{ marginBottom: 0 }}>Welcome Back!</Title>
+          <Text type="secondary" style={{ fontSize: 14 }}>
+            Login to continue to your dashboard.
+          </Text>
+          {state.error && (
+            <Alert
+              message={state.error}
+              description="Please check your email and password and try again. If you continue to experience issues, consider resetting your password or contact support for assistance."
+              type="error"
+              showIcon
+            />
+          )}
 
-          {/* Форма */}
-          <form onSubmit={handleSubmit} className="mt-4">
-            <input
-              type="text"
-              placeholder="Login"
-              className="w-full p-2 border border-gray-300 rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={state.username}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_FIELD",
-                  field: "username",
-                  value: e.target.value,
-                })
-              }
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-2 border border-gray-300 rounded-md mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={state.password}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_FIELD",
-                  field: "password",
-                  value: e.target.value,
-                })
-              }
-            />
-            <button
-              type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-md font-semibold transition"
+          <Form
+            layout="vertical"
+            onFinish={handleFinish}
+            initialValues={{ username: state.username, password: state.password }}
+          >
+            <Form.Item
+              label="Login"
+              name="username"
+              rules={[{ required: true, message: "Please enter your username" }]}
             >
-              Login
-            </button>
-          </form>
-
-          <div className="mt-3 text-sm text-blue-500 hover:underline text-center cursor-pointer">
-            Forgot your password?
-          </div>
-        </div>
-
-        {/* Блок ошибки с красной линией */}
-        {state.error && (
-          <div className="flex-1 ml-4 flex items-center">
-            <div className="border-l-4 border-red-500 pl-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
-              <strong className="block">{state.error}</strong>
-              <p className="text-sm">
-                Please check your email and password and try again. If you
-                continue to experience issues, consider resetting your password
-                or contact support for assistance.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="Login"
+                autoComplete="username"
+                onChange={(e) =>
+                  dispatch({ type: "SET_FIELD", field: "username", value: e.target.value })
+                }
+              />
+            </Form.Item>
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[{ required: true, message: "Please enter your password" }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Password"
+                autoComplete="current-password"
+                onChange={(e) =>
+                  dispatch({ type: "SET_FIELD", field: "password", value: e.target.value })
+                }
+              />
+            </Form.Item>
+            <Form.Item style={{ marginBottom: 12 }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                loading={isLoading}
+                style={{ background: "#ff6600", borderColor: "#ff6600" }}
+              >
+                Login
+              </Button>
+            </Form.Item>
+            <Form.Item style={{ marginBottom: 0 }}>
+              <div style={{ textAlign: "center" }}>
+                <Link onClick={handleForgot} style={{ fontSize: 13, cursor: "pointer" }}>
+                  Forgot your password?
+                </Link>
+              </div>
+            </Form.Item>
+          </Form>
+        </Space>
+      </Card>
     </div>
   );
 };

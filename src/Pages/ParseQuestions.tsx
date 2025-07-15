@@ -1,5 +1,7 @@
 import { useReducer } from "react";
-import { Category, QuestionType } from "../types";
+import { Card, Form, Select, Button, Row, Col, Input, Typography } from "antd";
+import CategoryDropdown from "../components/CategoryDropdown";
+import { useDispatch } from "react-redux";
 import {
   setCategoriesLimit,
   setCategoriesPage,
@@ -8,12 +10,12 @@ import {
   useGetCategoriesQuery,
   useParseQuestionsMutation,
 } from "../state";
-import CategoryDropdown from "../components/CategoryDropdown";
-import { useDispatch } from "react-redux";
-import InputField from "../components/QuestionGeneration/InputField";
+import { Category, QuestionType } from "../types";
 import ErrorMessage from "../components/QuestionGeneration/ErrorMessage";
 import TokensUsed from "../components/QuestionGeneration/TokensUsed";
 import { NavLink } from "react-router-dom";
+
+const { TextArea } = Input;
 
 interface IParseQuestions {
   category: Category | null;
@@ -37,10 +39,10 @@ const initialState: IParseQuestions = {
 
 type Action =
   | {
-      type: "SET_VALUE";
-      field: keyof IParseQuestions;
-      value: string | Category;
-    }
+    type: "SET_VALUE";
+    field: keyof IParseQuestions;
+    value: string | Category;
+  }
   | { type: "SET_ERROR"; error: string | null }
   | { type: "CLEAR_BOILERPLATE_TEXT" }
   | { type: "SET_IS_GENERATED"; isGenerated: boolean };
@@ -60,6 +62,20 @@ const reducer = (state: IParseQuestions, action: Action): IParseQuestions => {
   }
 };
 
+const languageOptions = [
+  { label: "en", value: "en" },
+  { label: "es", value: "es" },
+  { label: "fr", value: "fr" },
+  { label: "de", value: "de" },
+  { label: "uk", value: "uk" },
+  { label: "zh", value: "zh" },
+];
+
+const typeOptions = [
+  { label: "choice", value: "choice" },
+  { label: "map", value: "map" },
+];
+
 const ParseQuestions = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [parseQuestions, { isLoading }] = useParseQuestionsMutation();
@@ -70,13 +86,11 @@ const ParseQuestions = () => {
     { page, limit, title },
     { refetchOnMountOrArgChange: true }
   );
-  const handleInputChange = (name: string, value: string | Category) => {
-    dispatch({
-      type: "SET_VALUE",
-      field: name as keyof IParseQuestions,
-      value,
-    });
+
+  const handleInputChange = (field: keyof IParseQuestions, value: any) => {
+    dispatch({ type: "SET_VALUE", field, value });
   };
+
   const handleParse = async () => {
     if (!state.boilerplateText.trim()) {
       dispatch({
@@ -107,133 +121,171 @@ const ParseQuestions = () => {
       });
     } catch (error) {
       dispatch({ type: "SET_ERROR", error: "Failed to parse questions" });
+      // eslint-disable-next-line no-console
       console.error(error);
     }
   };
+
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded-md p-6 w-full max-w-3xl">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="font-semibold">Category</label>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f5f6fa",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: 32,
+      }}
+    >
+      <Card
+        style={{
+          width: "100%",
+          maxWidth: 820,
+          borderRadius: 16,
+          marginBottom: 32,
+          boxShadow: "0 2px 16px #0000000d",
+        }}
+        bodyStyle={{ padding: 32 }}
+      >
+        <Form layout="vertical">
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item label="Category" required>
+                <CategoryDropdown
+                  categories={categories?.responseObject.categories || []}
+                  selectedCategory={state.category}
+                  setSelectedCategory={(category) =>
+                    handleInputChange("category", category)
+                  }
+                  handleLimitChange={(limit) =>
+                    reduxDispatch(setCategoriesLimit(limit))
+                  }
+                  handlePageChange={(page) =>
+                    reduxDispatch(setCategoriesPage(page))
+                  }
+                  handleTitleChange={(title) =>
+                    reduxDispatch(setCategoriesTitle(title))
+                  }
+                  page={page}
+                  limit={limit}
+                  totalPages={totalPages}
+                  title={title}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="Language" required>
+                <Select
+                  value={state.language}
+                  onChange={(val) => handleInputChange("language", val)}
+                  options={languageOptions}
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item label="Type" required>
+                <Select
+                  value={state.type}
+                  onChange={(val) => handleInputChange("type", val)}
+                  options={typeOptions}
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
 
-            <CategoryDropdown
-              categories={categories?.responseObject.categories || []}
-              selectedCategory={state.category}
-              setSelectedCategory={(category) =>
-                handleInputChange("category", category)
+      <Card
+        style={{
+          width: "100%",
+          maxWidth: 820,
+          borderRadius: 12,
+          marginBottom: 24,
+          boxShadow: "0 2px 12px #00000010",
+        }}
+        bodyStyle={{ padding: 24 }}
+      >
+        <Form layout="vertical">
+          <Form.Item>
+            <TextArea
+              rows={8}
+              style={{ resize: "none", fontSize: 15 }}
+              value={state.boilerplateText}
+              onChange={(e) =>
+                dispatch({
+                  type: "SET_VALUE",
+                  field: "boilerplateText",
+                  value: e.target.value,
+                })
               }
-              handleLimitChange={(limit) =>
-                reduxDispatch(setCategoriesLimit(limit))
-              }
-              handlePageChange={(page) =>
-                reduxDispatch(setCategoriesPage(page))
-              }
-              handleTitleChange={(title) =>
-                reduxDispatch(setCategoriesTitle(title))
-              }
-              page={page}
-              limit={limit}
-              totalPages={totalPages}
-              title={title}
+              placeholder="Enter your prompt..."
+              autoSize={{ minRows: 8, maxRows: 14 }}
             />
-          </div>
-          <InputField
-            label="Language"
-            name="language"
-            type="select"
-            value={state.language}
-            selectOptions={["en", "es", "fr", "de", "uk", "zh"]}
-            onChange={(e) => handleInputChange("language", e)}
-          />
+          </Form.Item>
+        </Form>
+      </Card>
 
-          <InputField
-            label="Type"
-            name="type"
-            type="select"
-            value={state.type}
-            selectOptions={["choice", "map"]}
-            onChange={(e) => handleInputChange("type", e)}
-          />
-        </div>
-      </div>
-      <div className="mt-6 w-full max-w-3xl">
-        <div className="border border-gray-400 p-4 flex justify-between items-center bg-white rounded-md">
-          <textarea
-            // type="textarea"
-            rows={10}
-            //убери возможность resize
-            style={{ resize: "none" }}
-            value={state.boilerplateText}
-            onChange={(e) =>
-              dispatch({
-                type: "SET_VALUE",
-                field: "boilerplateText",
-                value: e.target.value,
-              })
-            }
-            placeholder="Enter your prompt..."
-            className="w-full p-2 border-none outline-none bg-transparent text-black"
-          />
-        </div>
-      </div>
-
-      <button
+      <Button
+        type="primary"
+        block
+        style={{
+          maxWidth: 820,
+          height: 44,
+          fontSize: 17,
+          borderRadius: 8,
+          background: "#1769ff",
+          marginBottom: 18,
+          fontWeight: 500,
+        }}
         onClick={handleParse}
-        className={`text-white p-2 rounded-md flex items-center gap-2 mt-4 ${
-          isLoading ? "bg-gray-400" : "bg-blue-500"
-        }`}
+        loading={isLoading}
         disabled={isLoading}
       >
         Generate
-        {isLoading ? (
-          <svg
-            className="animate-spin h-5 w-5 mr-2 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
-            ></path>
-          </svg>
-        ) : null}
-      </button>
+      </Button>
 
-      <ErrorMessage error={state.error ?? ""} />
-      <TokensUsed tokensUsed={state.tokensUsed} />
-      {state.isGenerated && (
-        <NavLink
-          to="/generated-questions"
-          className="bg-orange-500 text-white text-md font-semibold px-6 py-2 rounded-md mt-4 flex items-center gap-2"
-        >
-          View Questions
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 ml-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      <div style={{ width: "100%", maxWidth: 820 }}>
+        <ErrorMessage error={state.error ?? ""} />
+        <TokensUsed tokensUsed={state.tokensUsed} />
+        {state.isGenerated && (
+          <NavLink
+            to="/generated-questions"
+            style={{
+              background: "#ff6600",
+              color: "#fff",
+              fontSize: 17,
+              fontWeight: 600,
+              borderRadius: 8,
+              padding: "10px 24px",
+              display: "inline-flex",
+              alignItems: "center",
+              marginTop: 18,
+              textDecoration: "none",
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </NavLink>
-      )}
+            View Questions
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ marginLeft: 12 }}
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              width={28}
+              height={28}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </NavLink>
+        )}
+      </div>
     </div>
   );
 };
